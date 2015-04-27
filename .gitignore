@@ -1,0 +1,12 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Droid/bin/Debug
+/Droid/obj/Debug
+/Flipper/bin/Debug
+/Flipper/obj/Debug
+/iOS/bin
+/iOS/obj
+/packages
+*.DS_Store
