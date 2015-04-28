@@ -10,6 +10,7 @@ using CoreGraphics;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
+using Foundation;
 
 [assembly: ExportRenderer (typeof(Swiper), typeof(SwiperRenderer))]
 
@@ -18,57 +19,42 @@ namespace Flipper.iOS
 
     public class SwiperRenderer : ViewRenderer<Swiper, UIView>
     {
-        UIPanGestureRecognizer panGesture;
-        UIView _rootView;
-        UIImageView _centerImageView;
-        UIImageView _leftImageView;
-        UIImageView _rightImageView;
-        UIViewAnimationOptions _animationOptions;
-
-        private List<string> _imageUrls;
+        private UIPanGestureRecognizer panGesture;
+        private UIView _rootView;
+        private UIImageView _centerImageView;
+        private UIImageView _leftImageView;
+        private UIImageView _rightImageView;
+        private UIViewAnimationOptions _animationOptions;
         private string _currentImageUrl;
+        private nfloat dx = 0;
+        private nfloat dy = 0;
+        private nfloat startX;
+        private nfloat _width = 320;
+        private nfloat _height = 320f;
+        private nfloat _halfWidth;
+        private nfloat _halfHeight;
 
         public SwiperRenderer()
         {
-            _halfWidth = _width / 2;
-            _halfHeight = _height / 2;
-            _imageUrls = new List<string>();
-
-            _imageUrls.Add("arrow.png");
-            _imageUrls.Add("camel.jpg");
-            _imageUrls.Add("plumber.jpg");
-
             _animationOptions = UIViewAnimationOptions.TransitionCrossDissolve;
-
-            _currentImageUrl = _imageUrls.First();
         }
-
-        nfloat dx = 0;
-        nfloat dy = 0;
-        nfloat startX;
-        nfloat _width = 320f;
-        nfloat _height = 320f;
-        nfloat _halfWidth;
-        nfloat _halfHeight;
 
         protected override void OnElementChanged(ElementChangedEventArgs<Swiper> e)
         {
             base.OnElementChanged(e);
 
             _centerImageView = new UIImageView();
+            _centerImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
             _centerImageView.UserInteractionEnabled = true;
             _leftImageView = new UIImageView();
+            _leftImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
             _rightImageView = new UIImageView();
+            _rightImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
 
             panGesture = new UIPanGestureRecognizer(OnPan);
-            _centerImageView.Frame = new CGRect(0, 0, _width, _height);
             _centerImageView.AddGestureRecognizer (panGesture);
 
-            _leftImageView.Frame = new CGRect(0, 0, _width, _height);
-            _leftImageView.Center = new CGPoint(-_halfWidth, _halfHeight);
-
-            _rightImageView.Frame = new CGRect(0, 0, _width, _height);
-            _rightImageView.Center = new CGPoint(_width + _halfWidth, _halfHeight);
+            UpdateSizes();
 
             _rootView = new UIView();
             _rootView.ContentMode = UIViewContentMode.ScaleAspectFit;
@@ -81,9 +67,50 @@ namespace Flipper.iOS
             InitializeImages();
         }
 
+        private void UpdateSizes()
+        {
+            if (this.Element.Width > 0 &&
+                this.Element.Height > 0)
+            {
+                _width = (nfloat)this.Element.Width;
+                _halfWidth = _width / 2;
+
+                _height = (nfloat)this.Element.Height;
+                _halfHeight = _height / 2;
+
+                _leftImageView.Frame = new CGRect(0, 0, _width, _height);
+                _leftImageView.Center = new CGPoint(-_halfWidth, _halfHeight);
+
+                _rightImageView.Frame = new CGRect(0, 0, _width, _height);
+                _rightImageView.Center = new CGPoint(_width + _halfWidth, _halfHeight);
+                _centerImageView.Frame = new CGRect(0, 0, _width, _height);
+            }
+        }
+
+        protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            base.OnElementPropertyChanged(sender, e);
+
+            if(e.PropertyName == Swiper.SourceProperty.PropertyName)
+            {
+                InitializeImages();
+            }
+
+            if(e.PropertyName == Swiper.WidthProperty.PropertyName ||
+               e.PropertyName == Swiper.HeightProperty.PropertyName)
+            {
+                UpdateSizes();
+            }
+        }
+
         private void InitializeImages()
         {
-            if (!_imageUrls.Any())
+            if(this.Element.Source == null)
+            {
+                return;
+            }
+
+            if (!this.Element.Source.Any())
             {
                 _leftImageView.Image = null;
                 _rightImageView.Image = null;
@@ -94,29 +121,47 @@ namespace Flipper.iOS
 
             if (_currentImageUrl == null)
             {
-                _imageUrls.First();
+                _currentImageUrl = this.Element.Source.First();
             }
 
-            var index = _imageUrls.IndexOf(_currentImageUrl);
+            var index = this.Element.Source.IndexOf(_currentImageUrl);
             if (index > 0)
             {
-                _leftImageView.Image = UIImage.FromFile(_imageUrls[index - 1]);
+                _leftImageView.Image = ResolveImage(this.Element.Source[index - 1]);
             }
             else
             {
                 _leftImageView.Image = null;
             }
 
-            if (index < _imageUrls.Count() - 1)
+            if (index < this.Element.Source.Count() - 1)
             {
-                _rightImageView.Image = UIImage.FromFile(_imageUrls[index + 1]);
+                _rightImageView.Image = ResolveImage(this.Element.Source[index + 1]);
             }
             else
             {
                 _rightImageView.Image = null;
             }
 
-            _centerImageView.Image = UIImage.FromFile(_currentImageUrl);
+            _centerImageView.Image = ResolveImage(_currentImageUrl);
+        }
+
+        private UIImage ResolveImage(string source)
+        {
+            if(source.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))
+            {
+                using (var url = new NSUrl(source))
+                {
+                    using (var data = NSData.FromUrl(url))
+                    {
+                        return UIImage.LoadFromData(data);
+                    }
+                }
+            }
+            else
+            {
+                return UIImage.FromFile(source);
+            }
         }
 
         private void OnPan(UIPanGestureRecognizer recognizer)
@@ -150,7 +195,7 @@ namespace Flipper.iOS
                 var p1 = p0.X - startX;
                 startX = 0;
 
-                var index = _imageUrls.IndexOf(_currentImageUrl);
+                var index = this.Element.Source.IndexOf(_currentImageUrl);
 
                 if (Math.Abs(p1) > 30)
                 {
@@ -167,13 +212,13 @@ namespace Flipper.iOS
                             () =>
                             {
                                 MoveImagesToOrigin();
-                                _currentImageUrl = _imageUrls[index - 1];
+                                _currentImageUrl = this.Element.Source[index - 1];
                                 InitializeImages();
                             }
                         );
 
                     }
-                    else if (p1 < 0 && index < _imageUrls.Count() - 1)
+                    else if (p1 < 0 && index < this.Element.Source.Count() - 1)
                     {
                         Animate(0.2, 0, _animationOptions,
                             () =>
@@ -186,7 +231,7 @@ namespace Flipper.iOS
                             () =>
                             {
                                 MoveImagesToOrigin();
-                                _currentImageUrl = _imageUrls[index + 1];
+                                _currentImageUrl = this.Element.Source[index + 1];
                                 InitializeImages();
                             });
                     }

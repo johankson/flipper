@@ -4,7 +4,7 @@
              xmlns:controls="clr-namespace:Flipper.Controls;assembly=Flipper"
              x:Class="Flipper.Sample.Views.MainView">
 
-  <Grid>
+  <Grid RowSpacing="0">
 
     <Grid.RowDefinitions>
       <RowDefinition Height="80" />
@@ -13,9 +13,11 @@
     </Grid.RowDefinitions>
 
     <Label Grid.Row="0" Text="Swipe left or right" HorizontalOptions="Center" VerticalOptions="Center" />
+    <BoxView Color="Green" Grid.Row="0" />
 
-    <controls:Swiper Grid.Row="1"  />
-    
+    <controls:Swiper Grid.Row="1" Source="{Binding Items}"  />
+
+    <BoxView Color="Green" Grid.Row="2" />
   </Grid>
   
 </ContentPage>
