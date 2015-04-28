@@ -7,6 +7,7 @@ namespace Flipper.Controls
     {
         public Swiper()
         {
+            int i = 42;
         }
     }
 }

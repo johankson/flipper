@@ -1,8 +1,11 @@
-﻿using System;
-
+﻿using Flipper.Sample.Views;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Xamarin.Forms;
 
-namespace Flipper
+namespace Flipper.Sample
 {
     public class App : Application
     {
@@ -28,4 +31,3 @@ namespace Flipper
         }
     }
 }
-

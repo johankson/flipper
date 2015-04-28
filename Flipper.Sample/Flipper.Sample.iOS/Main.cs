@@ -5,7 +5,7 @@ using System.Linq;
 using Foundation;
 using UIKit;
 
-namespace Flipper.iOS
+namespace Flipper.Sample.iOS
 {
     public class Application
     {
@@ -18,4 +18,3 @@ namespace Flipper.iOS
         }
     }
 }
-
