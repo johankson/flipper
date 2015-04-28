@@ -3,7 +3,6 @@ This is a simple carousel view for images that is lightway and really fast. The 
 
 # status
 
-iOS has a working renderer
-Android is under development
-WP is under development
-
+iOS has a working renderer.
+Android is under development.
+WP is under development.
