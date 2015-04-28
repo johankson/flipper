@@ -11,3 +11,11 @@
 /packages
 *.DS_Store
 Flipper.v12.suo
+/Flipper.Sample/Flipper.Sample/bin/Debug
+/Flipper.Sample/Flipper.Sample/obj/Debug
+/Flipper.Sample/Flipper.Sample/Flipper.Sample.csproj.user
+/Flipper.Sample/Flipper.Sample.Droid/obj/Debug/android/flipper/sample/droid/R.java
+/Flipper.Sample/Flipper.Sample.Droid/obj/Debug/android/src/android/support/v4/R.java
+/Flipper.Sample/Flipper.Sample.Droid/obj/Debug/__library_projects__
+/Flipper.Sample/Flipper.Sample.iOS/bin/iPhoneSimulator/Debug
+/Flipper.Sample/Flipper.Sample.iOS/obj/iPhoneSimulator/Debug
