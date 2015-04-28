@@ -2,7 +2,7 @@
 
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment" AppPlatformVersion="8.0">
   <DefaultLanguage xmlns="" code="en-US"/>
-  <App xmlns="" ProductID="{265db7e6-1b52-4a86-9a23-220fe9c6944f}" Title="Flipper.WinPhone" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal"  Author="Flipper.WinPhone author" Description="Sample description" Publisher="Flipper.WinPhone" PublisherID="{1ff50305-f749-4a25-8ef9-bfdf70d28454}">
+  <App xmlns="" ProductID="{1128c97c-0b5d-4320-8ba5-c6a02b34dbb5}" Title="Flipper.WinPhone" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal"  Author="Flipper.WinPhone author" Description="Sample description" Publisher="Flipper.WinPhone" PublisherID="{e2d0ad34-1664-4635-8bb1-9de4f896c6df}">
     <IconPath IsRelative="true" IsResource="false">Assets\ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING"/>

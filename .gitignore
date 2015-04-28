@@ -11,3 +11,17 @@
 /packages
 *.DS_Store
 Flipper.v12.suo
+/Flipper.Sample
+/Flipper.Sample/Flipper.Sample
+/Flipper.Sample/Flipper.Sample/bin/Debug
+/Flipper.Sample/Flipper.Sample/obj/Debug
+/Flipper.Sample/Flipper.Sample.Droid
+/Flipper.Sample/Flipper.Sample.Droid/bin/Debug
+/Flipper.Sample/Flipper.Sample.Droid/obj/Debug
+/Flipper.Sample/Flipper.Sample.iOS
+/Flipper.Sample/Flipper.Sample.iOS/bin/iPhone/Debug
+/Flipper.Sample/Flipper.Sample.iOS/obj/iPhone/Debug
+/Flipper.Sample/Flipper.Sample.WinPhone/obj/x86/Debug
+/Flipper.WinPhone
+/Flipper.WinPhone/Bin/x86/Debug
+/Flipper.WinPhone/obj
