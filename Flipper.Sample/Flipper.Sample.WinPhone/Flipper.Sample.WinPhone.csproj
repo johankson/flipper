@@ -159,6 +159,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Flipper.WinPhone\Flipper.WinPhone.csproj">
+      <Project>{1128c97c-0b5d-4320-8ba5-c6a02b34dbb5}</Project>
+      <Name>Flipper.WinPhone</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Flipper.Sample\Flipper.Sample.csproj">
       <Name>Flipper.Sample</Name>
     </ProjectReference>
