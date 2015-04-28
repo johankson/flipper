@@ -19,7 +19,6 @@ namespace Flipper.iOS
 
     public class SwiperRenderer : ViewRenderer<Swiper, UIView>
     {
-        private UIPanGestureRecognizer panGesture;
         private UIView _rootView;
         private UIImageView _centerImageView;
         private UIImageView _leftImageView;
@@ -36,23 +35,27 @@ namespace Flipper.iOS
 
         public SwiperRenderer()
         {
-            _animationOptions = UIViewAnimationOptions.TransitionCrossDissolve;
+            _animationOptions = UIViewAnimationOptions.TransitionNone;
+        }
+
+        private UIImageView CreateImageView()
+        {
+            return new UIImageView()
+            {
+                ContentMode = UIViewContentMode.ScaleAspectFit
+            };
         }
 
         protected override void OnElementChanged(ElementChangedEventArgs<Swiper> e)
         {
             base.OnElementChanged(e);
 
-            _centerImageView = new UIImageView();
-            _centerImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
-            _centerImageView.UserInteractionEnabled = true;
-            _leftImageView = new UIImageView();
-            _leftImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
-            _rightImageView = new UIImageView();
-            _rightImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
+            _leftImageView = CreateImageView();
+            _rightImageView = CreateImageView();
 
-            panGesture = new UIPanGestureRecognizer(OnPan);
-            _centerImageView.AddGestureRecognizer (panGesture);
+            _centerImageView = CreateImageView();
+            _centerImageView.UserInteractionEnabled = true;
+            _centerImageView.AddGestureRecognizer (new UIPanGestureRecognizer(OnPan));
 
             UpdateSizes();
 
@@ -67,6 +70,9 @@ namespace Flipper.iOS
             InitializeImages();
         }
 
+        /// <summary>
+        /// Recalculates sizes
+        /// </summary>
         private void UpdateSizes()
         {
             if (this.Element.Width > 0 &&
@@ -146,6 +152,11 @@ namespace Flipper.iOS
             _centerImageView.Image = ResolveImage(_currentImageUrl);
         }
 
+        /// <summary>
+        /// Resolves the source into an UIImage
+        /// </summary>
+        /// <param name="source">An URL or a resource name</param>
+        /// <returns>A UIImage</returns>
         private UIImage ResolveImage(string source)
         {
             if(source.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))
@@ -171,14 +182,20 @@ namespace Flipper.iOS
 
                 var p0 = recognizer.LocationInView (this.NativeView);
 
-                if(startX == 0)
+                if (startX == 0)
+                {
                     startX = p0.X;
+                }
 
                 if (dx == 0)
+                {
                     dx = p0.X - _centerImageView.Center.X;
+                }
 
                 if (dy == 0)
+                {
                     dy = p0.Y - _centerImageView.Center.Y;
+                }
 
                 var p1 = new CGPoint (p0.X - dx, _centerImageView.Center.Y);
 
@@ -187,7 +204,9 @@ namespace Flipper.iOS
                 _leftImageView.Center = new CGPoint(p1.X - _width, _halfHeight);
                 _rightImageView.Center = new CGPoint(p1.X + _width, _halfHeight);
 
-            } else if (recognizer.State == UIGestureRecognizerState.Ended) {
+            } 
+            else if (recognizer.State == UIGestureRecognizerState.Ended)
+            {
                 dx = 0;
                 dy = 0;
 

@@ -16,6 +16,13 @@ namespace Flipper.Sample.Views
         {
             InitializeComponent();
 
+            var model = CreateViewModel();
+
+            BindingContext = model;
+        }
+
+        private static MainViewModel CreateViewModel()
+        {
             var key = Guid.NewGuid().ToString();
             var items = new ObservableCollection<string>();
 
@@ -33,8 +40,7 @@ namespace Flipper.Sample.Views
             {
                 Items = items
             };
-
-            BindingContext = model;
+            return model;
         }
     }
 }
