@@ -37,14 +37,30 @@ namespace Flipper.Droid
 			}
 		}
 		
+		public partial class Drawable
+		{
+			
+			// aapt resource value: 0x7f020000
+			public static int arrow = 2130837504;
+			
+			static Drawable()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private Drawable()
+			{
+			}
+		}
+		
 		public partial class String
 		{
 			
-			// aapt resource value: 0x7f020001
-			public static int ApplicationName = 2130837505;
+			// aapt resource value: 0x7f030001
+			public static int ApplicationName = 2130903041;
 			
-			// aapt resource value: 0x7f020000
-			public static int Hello = 2130837504;
+			// aapt resource value: 0x7f030000
+			public static int Hello = 2130903040;
 			
 			static String()
 			{

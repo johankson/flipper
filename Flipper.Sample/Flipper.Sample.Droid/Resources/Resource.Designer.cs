@@ -26,6 +26,9 @@ namespace Flipper.Sample.Droid
 		
 		public static void UpdateIdValues()
 		{
+			global::Flipper.Droid.Resource.Drawable.arrow = global::Flipper.Sample.Droid.Resource.Drawable.arrow;
+			global::Flipper.Droid.Resource.String.ApplicationName = global::Flipper.Sample.Droid.Resource.String.ApplicationName;
+			global::Flipper.Droid.Resource.String.Hello = global::Flipper.Sample.Droid.Resource.String.Hello;
 			global::Xamarin.Forms.Platform.Resource.String.ApplicationName = global::Flipper.Sample.Droid.Resource.String.ApplicationName;
 			global::Xamarin.Forms.Platform.Resource.String.Hello = global::Flipper.Sample.Droid.Resource.String.Hello;
 		}
@@ -47,7 +50,10 @@ namespace Flipper.Sample.Droid
 		{
 			
 			// aapt resource value: 0x7f020000
-			public const int icon = 2130837504;
+			public const int arrow = 2130837504;
+			
+			// aapt resource value: 0x7f020001
+			public const int icon = 2130837505;
 			
 			static Drawable()
 			{
