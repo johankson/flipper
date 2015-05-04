@@ -130,20 +130,22 @@ namespace Flipper.Droid.Renderers
             public Action ImageLoaded { get; set; }
         }
 
+        private Bitmap _centerBitmap = null;
+
         public override void Draw(Android.Graphics.Canvas canvas)
         {
-            Bitmap bitmap = ((BitmapDrawable)_centerImageView.Drawable).Bitmap;
+            
+            if(_centerBitmap == null)
+            {
+                // Resize and assign the bitmap
+                // TODO Work in progress
+                Bitmap bitmap = ((BitmapDrawable)_centerImageView.Drawable).Bitmap;
+                var rect = CalculateLargestRect(bitmap);
+                _centerBitmap = ResizeBitmap(bitmap, rect.Width(), rect.Height());
+            }
 
-            var width = this.Width;
-            var height = this.Height;
-            var dstRect = new Rect(0, 0, width, height);
-
-            // Calculate the new bounds
-            var rect = CalculateLargestRect(bitmap);
-            var dest = CalculateCentrationRect(rect);
-
-            bitmap = ResizeBitmap(bitmap, rect.Width(), rect.Height());
-            canvas.DrawBitmap(bitmap, dest.Left, dest.Top, null);
+            var dest = CalculateCentrationRect(_centerBitmap);
+            canvas.DrawBitmap(_centerBitmap, dest.Left + _swipeCurrectXOffset, dest.Top, null);
         }
 
         /// <summary>
@@ -163,6 +165,13 @@ namespace Flipper.Droid.Renderers
                 return new Rect(this.Width / 2 - src.Width() / 2, 0, this.Width / 2 + src.Width() / 2, src.Height());
             }
         }
+
+        private Rect CalculateCentrationRect(Bitmap bitmap)
+        {
+            var rect = new Rect(0, 0, bitmap.Width, bitmap.Height);
+            return CalculateCentrationRect(rect);
+        }
+
 
         /// <summary>
         /// Calculates the largest rect possible to scale the image to for it
@@ -242,6 +251,31 @@ namespace Flipper.Droid.Renderers
                 {
                      
                 };
+        }
+
+        private float _swipeStartX = 0f;
+        private float _swipeCurrectXOffset = 0f;
+
+        public override bool OnTouchEvent(MotionEvent e)
+        {
+            switch(e.Action)
+            {
+                case MotionEventActions.Down:
+                    _swipeStartX = e.GetX();
+                    return true;
+
+                case MotionEventActions.Up:
+                    _swipeCurrectXOffset = 0f;
+                    Invalidate();
+                    return true;
+
+                case MotionEventActions.Move:
+                    _swipeCurrectXOffset = e.GetX() - _swipeStartX;
+                    Invalidate();
+                    return true;
+            }
+
+            return base.OnTouchEvent(e);
         }
     }
 }
