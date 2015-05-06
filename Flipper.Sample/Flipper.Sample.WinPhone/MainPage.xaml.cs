@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using Flipper.WinPhone.Renderers;
 
 namespace Flipper.Sample.WinPhone
 {
@@ -14,6 +15,8 @@ namespace Flipper.Sample.WinPhone
     {
         public MainPage()
         {
+            var dummy = new SwiperRenderer();
+
             InitializeComponent();
             SupportedOrientations = SupportedPageOrientation.PortraitOrLandscape;
 

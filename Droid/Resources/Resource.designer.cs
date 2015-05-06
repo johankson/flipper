@@ -9,9 +9,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("Flipper.Sample.Droid.Resource", IsApplication=true)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("Flipper.Droid.Resource", IsApplication=true)]
 
-namespace Flipper.Sample.Droid
+namespace Flipper.Droid
 {
 	
 	
@@ -26,8 +26,8 @@ namespace Flipper.Sample.Droid
 		
 		public static void UpdateIdValues()
 		{
-			global::Xamarin.Forms.Platform.Resource.String.ApplicationName = global::Flipper.Sample.Droid.Resource.String.ApplicationName;
-			global::Xamarin.Forms.Platform.Resource.String.Hello = global::Flipper.Sample.Droid.Resource.String.Hello;
+			global::Xamarin.Forms.Platform.Resource.String.ApplicationName = global::Flipper.Droid.Resource.String.ApplicationName;
+			global::Xamarin.Forms.Platform.Resource.String.Hello = global::Flipper.Droid.Resource.String.Hello;
 		}
 		
 		public partial class Attribute
