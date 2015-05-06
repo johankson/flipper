@@ -75,8 +75,7 @@ namespace Flipper.iOS
         /// </summary>
         private void UpdateSizes()
         {
-            if (this.Element.Width > 0 &&
-                this.Element.Height > 0)
+            if (this.Element.Width > 0 && this.Element.Height > 0)
             {
                 _width = (nfloat)this.Element.Width;
                 _halfWidth = _width / 2;
@@ -109,6 +108,10 @@ namespace Flipper.iOS
             }
         }
 
+        /// <summary>
+        /// Sets the ImageViews to the correct images based on
+        /// the current selected image.
+        /// </summary>
         private void InitializeImages()
         {
             if(this.Element.Source == null)

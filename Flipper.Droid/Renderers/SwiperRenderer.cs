@@ -17,6 +17,7 @@ using View = Android.Views.View;
 using Xamarin.Forms;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+using Android.Util;
 
 [assembly: ExportRenderer(typeof(Swiper), typeof(SwiperRenderer))]
 
@@ -64,9 +65,9 @@ namespace Flipper.Droid.Renderers
 
             if (!this.Element.Source.Any())
             {
-                _leftImageView.SetImageBitmap(null); // Image = null;
-                _rightImageView.SetImageBitmap(null); //.Image = null;
-                _centerImageView.SetImageBitmap(null); //.Image = null;
+                _leftImageView.SetImageBitmap(null); 
+                _rightImageView.SetImageBitmap(null);
+                _centerImageView.SetImageBitmap(null);
                 _currentImageUrl = null;
                 return;
             }
@@ -95,21 +96,37 @@ namespace Flipper.Droid.Renderers
                      _rightImageView.Image = null;
                  } */
 
-            // _centerImageView.SetImageBitmap(ResolveImage(_currentImageUrl)); 
+            _centerBitmap = ResolveImage(_currentImageUrl);
             //Koush.UrlImageViewHelper.SetUrlDrawable(_centerImageView, _currentImageUrl, new cb(
             //    () =>
             //    {
-            //        //Device.BeginInvokeOnMainThread(
-            //        //    () =>
-            //        //    {
-            //        //        _rootView.Invalidate();
-            //        //    });
-            //        //  _rootView.PostInvalidate();
+            //        Device.BeginInvokeOnMainThread(
+            //            () =>
+            //            {
+            //                _rootView.Invalidate();
+            //            });
+            //        _rootView.PostInvalidate();
             //        this.Invalidate();
             //    }));
 
-            //var r = Resources.GetDrawable("arrow");
             _centerImageView.SetImageResource(Resource.Drawable.arrow);
+        }
+
+        /// <summary>
+        /// Resolves the image from the given uri. Also handles
+        /// caching and resizing... It's a magic function.
+        /// </summary>
+        /// <param name="url">The URL to the image</param>
+        /// <returns>A resized, nice bitmap</returns>
+        private Bitmap ResolveImage(string url)
+        {
+            // Resize and assign the bitmap
+            // TODO Work in progress 
+            // TODO Download from the internets
+            // TODO Cache here
+            Bitmap bitmap = ((BitmapDrawable)_centerImageView.Drawable).Bitmap;
+            var rect = CalculateLargestRect(bitmap);
+            return ResizeBitmap(bitmap, rect.Width(), rect.Height());
         }
 
         class cb : Java.Lang.Object, Koush.IUrlImageViewCallback
@@ -134,15 +151,14 @@ namespace Flipper.Droid.Renderers
 
         public override void Draw(Android.Graphics.Canvas canvas)
         {
-            
-            if(_centerBitmap == null)
-            {
-                // Resize and assign the bitmap
-                // TODO Work in progress
-                Bitmap bitmap = ((BitmapDrawable)_centerImageView.Drawable).Bitmap;
-                var rect = CalculateLargestRect(bitmap);
-                _centerBitmap = ResizeBitmap(bitmap, rect.Width(), rect.Height());
-            }
+            //if(_centerBitmap == null)
+            //{
+            //    // Resize and assign the bitmap
+            //    // TODO Work in progress
+            //    Bitmap bitmap = ((BitmapDrawable)_centerImageView.Drawable).Bitmap;
+            //    var rect = CalculateLargestRect(bitmap);
+            //    _centerBitmap = ResizeBitmap(bitmap, rect.Width(), rect.Height());
+            //}
 
             var dest = CalculateCentrationRect(_centerBitmap);
             canvas.DrawBitmap(_centerBitmap, dest.Left + _swipeCurrectXOffset, dest.Top, null);
