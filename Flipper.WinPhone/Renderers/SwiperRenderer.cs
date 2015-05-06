@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.WinPhone;
@@ -24,23 +25,50 @@ namespace Flipper.WinPhone.Renderers
 
         public SwiperRenderer()
         {
-            if(_currentImage == 0)
-            {
-                _prevImage.Source = new BitmapImage( new Uri(Element.Source.Last()));
-                _image.Source = new BitmapImage(new Uri(Element.Source.First()));
-                _nextImage.Source = new BitmapImage(new Uri(Element.Source[1]));
-            }
+           
         }
 
         protected override void OnElementChanged(ElementChangedEventArgs<Swiper> e)
         {
             base.OnElementChanged(e);
+
+            if (_currentImage == 0)
+            {
+                _prevImage.Source = new BitmapImage(new Uri(Element.Source.Last()));
+                _image.Source = new BitmapImage(new Uri(Element.Source.First()));
+                _nextImage.Source = new BitmapImage(new Uri(Element.Source[1]));
+            }
+
             var panorama = new Panorama();
-            panorama.Items.Add(_prevImage);
+            panorama.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 255, 255, 255));
+
+            
+
+            if (Element.Source.Count > 1)
+            {
+                panorama.Items.Add(_prevImage);
+            }
+
             panorama.Items.Add(_image);
-            panorama.Items.Add(_nextImage);
+
+            if (Element.Source.Count > 2)
+            {
+                panorama.Items.Add(_nextImage);
+            }
+
+            if (Element.Source.Count > 1)
+            {
+                panorama.TabIndex = 1;
+            }
+            
+            panorama.SelectionChanged += panorama_SelectionChanged;
 
             SetNativeControl(panorama);
+        }
+
+        void panorama_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            
         }
     }
 }
