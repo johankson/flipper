@@ -92,6 +92,14 @@
     <Content Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Flipper.Droid\Flipper.Droid.csproj">
+      <Project>{21cbea92-614e-401f-8fb8-18adf19920db}</Project>
+      <Name>Flipper.Droid</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Flipper\Flipper.csproj">
+      <Project>{39bd4fcf-0dce-4178-910e-3d411e906869}</Project>
+      <Name>Flipper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Flipper.Sample\Flipper.Sample.csproj">
       <Name>Flipper.Sample</Name>
     </ProjectReference>

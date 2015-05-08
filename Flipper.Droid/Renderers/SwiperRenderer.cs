@@ -18,6 +18,9 @@ using Xamarin.Forms;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Util;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Java.IO;
 
 [assembly: ExportRenderer(typeof(Swiper), typeof(SwiperRenderer))]
 
@@ -26,19 +29,21 @@ namespace Flipper.Droid.Renderers
     public class SwiperRenderer : ViewRenderer<Swiper, View>
     {
         private View _rootView;
-        private ImageView _centerImageView;
-        private ImageView _leftImageView;
-        private ImageView _rightImageView;
+
+        private Bitmap _centerBitmap = null;
+        private Bitmap _leftBitmap = null;
+        private Bitmap _rightBitmap = null;
+     
         private string _currentImageUrl;
         public SwiperRenderer()
         {
             this.SetWillNotDraw(false);
         }
-        protected override void OnElementChanged(ElementChangedEventArgs<Swiper> e)
+        protected async override void OnElementChanged(ElementChangedEventArgs<Swiper> e)
         {
             base.OnElementChanged(e);
 
-            _centerImageView = CreateImageView();
+         //   _centerImageView = CreateImageView();
 
             // UpdateSizes();
 
@@ -53,10 +58,10 @@ namespace Flipper.Droid.Renderers
             SetNativeControl(_rootView);
            
 
-            InitializeImages();
+            await InitializeImages();
         }
 
-        private void InitializeImages()
+        private async Task InitializeImages()
         {
             if (this.Element.Source == null)
             {
@@ -65,9 +70,11 @@ namespace Flipper.Droid.Renderers
 
             if (!this.Element.Source.Any())
             {
-                _leftImageView.SetImageBitmap(null); 
-                _rightImageView.SetImageBitmap(null);
-                _centerImageView.SetImageBitmap(null);
+                // TODO Add a placeholder bitmap for empty ones?
+                _leftBitmap = null;
+                _rightBitmap = null;
+                _centerBitmap = null;
+
                 _currentImageUrl = null;
                 return;
             }
@@ -96,20 +103,11 @@ namespace Flipper.Droid.Renderers
                      _rightImageView.Image = null;
                  } */
 
-            _centerBitmap = ResolveImage(_currentImageUrl);
-            //Koush.UrlImageViewHelper.SetUrlDrawable(_centerImageView, _currentImageUrl, new cb(
-            //    () =>
-            //    {
-            //        Device.BeginInvokeOnMainThread(
-            //            () =>
-            //            {
-            //                _rootView.Invalidate();
-            //            });
-            //        _rootView.PostInvalidate();
-            //        this.Invalidate();
-            //    }));
-
-            _centerImageView.SetImageResource(Resource.Drawable.arrow);
+                 _centerBitmap = await ResolveImage(_currentImageUrl);
+                 Invalidate();
+           
+       //     _centerImageView.SetImageResource(Resource.Drawable.arrow);
+           
         }
 
         /// <summary>
@@ -118,37 +116,27 @@ namespace Flipper.Droid.Renderers
         /// </summary>
         /// <param name="url">The URL to the image</param>
         /// <returns>A resized, nice bitmap</returns>
-        private Bitmap ResolveImage(string url)
+        private async Task<Bitmap> ResolveImage(string url)
         {
             // Resize and assign the bitmap
-            // TODO Work in progress 
-            // TODO Download from the internets
             // TODO Cache here
-            Bitmap bitmap = ((BitmapDrawable)_centerImageView.Drawable).Bitmap;
-            var rect = CalculateLargestRect(bitmap);
-            return ResizeBitmap(bitmap, rect.Width(), rect.Height());
-        }
-
-        class cb : Java.Lang.Object, Koush.IUrlImageViewCallback
-        {
-            public cb(Action loadedAction)
+            // TODO Figure out how to handle slow downloads
+            using(var client = new HttpClient())
             {
-                ImageLoaded = loadedAction;
-            }
-
-            public void OnLoaded(ImageView p0, Android.Graphics.Bitmap p1, string p2, bool p3)
-            {
-                if(ImageLoaded!=null)
+                try
                 {
-                    ImageLoaded();
+                    var stream = await client.GetStreamAsync(new Uri(url));
+                    var bitmap = await BitmapFactory.DecodeStreamAsync(stream);
+                    var rect = CalculateLargestRect(bitmap);
+                    return ResizeBitmap(bitmap, rect.Width(), rect.Height());
+                }
+                catch(Exception ex)
+                {
+                    return null;
                 }
             }
-
-            public Action ImageLoaded { get; set; }
         }
-
-        private Bitmap _centerBitmap = null;
-
+        
         public override void Draw(Android.Graphics.Canvas canvas)
         {
             //if(_centerBitmap == null)
@@ -160,8 +148,11 @@ namespace Flipper.Droid.Renderers
             //    _centerBitmap = ResizeBitmap(bitmap, rect.Width(), rect.Height());
             //}
 
-            var dest = CalculateCentrationRect(_centerBitmap);
-            canvas.DrawBitmap(_centerBitmap, dest.Left + _swipeCurrectXOffset, dest.Top, null);
+            if(_centerBitmap != null)
+            {
+                var dest = CalculateCentrationRect(_centerBitmap);
+                canvas.DrawBitmap(_centerBitmap, dest.Left + _swipeCurrectXOffset, dest.Top, null);
+            }
         }
 
         /// <summary>
