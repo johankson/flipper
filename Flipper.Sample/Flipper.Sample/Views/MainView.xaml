@@ -3,8 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:Flipper.Controls;assembly=Flipper"
              x:Class="Flipper.Sample.Views.MainView">
-
   <Grid RowSpacing="0">
+    <Grid.BackgroundColor>
+      <OnPlatform x:TypeArguments="Color" iOS="White" Android="#CCCCCC" WinPhone="White" />
+    </Grid.BackgroundColor>
 
     <Grid.RowDefinitions>
       <RowDefinition Height="80" />
@@ -14,10 +16,14 @@
 
     <Label Grid.Row="0" Text="Swipe left or right" HorizontalOptions="Center" VerticalOptions="Center" />
     <BoxView Color="Green" Grid.Row="0" />
-
-    <controls:Swiper Grid.Row="1" Source="{Binding Items}" />
-
+    <ContentView Grid.Row="1">
+      <ContentView.Padding>
+        <OnPlatform x:TypeArguments="Thickness" Android="10" iOS="0" WinPhone="0" />
+      </ContentView.Padding>
+      <controls:CardContentView CornderRadius="5" BackgroundColor="White">
+        <controls:Swiper Source="{Binding Items}" />
+      </controls:CardContentView>
+    </ContentView>
     <BoxView Color="Green" Grid.Row="2" />
   </Grid>
-  
 </ContentPage>
