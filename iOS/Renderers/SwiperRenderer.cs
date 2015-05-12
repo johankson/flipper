@@ -107,6 +107,19 @@ namespace Flipper.iOS
             {
                 UpdateSizes();
             }
+
+            if(e.PropertyName == Swiper.SelectedIndexProperty.PropertyName)
+            {
+                //TODO Check for index overrun
+                _currentImageUrl = this.Element.Source[this.Element.SelectedIndex];
+                await InitializeImagesAsync();
+            }
+
+            if(e.PropertyName == Swiper.SelectedUrlProperty.PropertyName)
+            {
+                _currentImageUrl = this.Element.SelectedUrl;
+                await InitializeImagesAsync();
+            }
         }
 
         /// <summary>
@@ -134,9 +147,22 @@ namespace Flipper.iOS
                 _currentImageUrl = this.Element.Source.First();
             }
 
-            _centerImageView.Image = await ResolveImage(_currentImageUrl);
-
+            // Set some properties on the control
             var index = this.Element.Source.IndexOf(_currentImageUrl);
+            this.Element.SelectedIndex = index;
+            this.Element.SelectedUrl = _currentImageUrl;
+
+            if(index > this.Element.Source.Count - 3 && this.Element.IsNearEnd != null)
+            {
+                // TODO Fix a setting for the threshold (now it's hardcoded to 3 from the edge)
+                if(this.Element.IsNearEnd.CanExecute(null))
+                {
+                    this.Element.IsNearEnd.Execute(null);
+                }
+            }
+
+            _centerImageView.Image = await ResolveImage(_currentImageUrl);
+           
             if (index > 0)
             {
                 _leftImageView.Image = await ResolveImage(this.Element.Source[index - 1]);
@@ -158,7 +184,7 @@ namespace Flipper.iOS
             // Preload concept code
             for (int i = (index + 2); i < index + 6; i++)
             {
-                if (this.Element.Source.Count < (i - 1))
+                if (this.Element.Source.Count > i)
                 {
                     await ResolveImage(this.Element.Source[i]);
                 }
@@ -208,7 +234,13 @@ namespace Flipper.iOS
                     // TODO Check null and handle it
                 }
 
-                _cache.Add(imageUrl, content);
+                lock (_cache)
+                {
+                    if (!_cache.ContainsKey(imageUrl))
+                    {
+                        _cache.Add(imageUrl, content);
+                    }
+                }
             }
 
             return UIImage.LoadFromData(NSData.FromArray(content));
