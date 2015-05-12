@@ -3,8 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:flipper="clr-namespace:Flipper.Controls;assembly=Flipper"
              x:Class="Flipper.Sample.Views.MainView">
-
   <Grid RowSpacing="0">
+    <Grid.BackgroundColor>
+      <OnPlatform x:TypeArguments="Color" iOS="White" Android="#CCCCCC" WinPhone="White" />
+    </Grid.BackgroundColor>
 
     <Grid.RowDefinitions>
       <RowDefinition Height="80" />
@@ -12,15 +14,20 @@
       <RowDefinition Height="50" />
     </Grid.RowDefinitions>
 
-    <BoxView Color="Green" Grid.Row="0" />
     <Label Grid.Row="0" Text="Swipe left or right" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" />
-
-    <flipper:Swiper Grid.Row="1" Source="{Binding Items}" IsNearEnd="{Binding EndIsNearCommand}" SelectedIndex="{Binding Index, Mode=TwoWay}" />
     
+    <BoxView Color="Green" Grid.Row="0" />
+    <ContentView Grid.Row="1">
+      <ContentView.Padding>
+        <OnPlatform x:TypeArguments="Thickness" Android="10" iOS="0" WinPhone="0" />
+      </ContentView.Padding>
+      <flipper:CardContentView CornderRadius="5" BackgroundColor="White">
+        <flipper:Swiper Grid.Row="1" Source="{Binding Items}" IsNearEnd="{Binding EndIsNearCommand}" SelectedIndex="{Binding Index, Mode=TwoWay}" />
+      </flipper:CardContentView>
+    </ContentView>
     <BoxView Color="Green" Grid.Row="2" />
     <Label Grid.Row="2" Text="{Binding Status}" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
 
     <Button Text="Random" HorizontalOptions="End" VerticalOptions="Center" Command="{Binding GotoRandom}" />
   </Grid>
-  
 </ContentPage>
