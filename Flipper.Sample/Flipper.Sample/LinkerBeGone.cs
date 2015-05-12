@@ -1,9 +1,4 @@
 ﻿using Flipper.Controls;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Flipper.Sample
 {
@@ -11,6 +6,7 @@ namespace Flipper.Sample
     {
         public LinkerBeGone()
         {
+            // This is needed to ensure that the linker doesn't remove the control
             var a = new Swiper();
         }
     }
