@@ -15,7 +15,7 @@
     <Label Grid.Row="0" Text="Swipe left or right" HorizontalOptions="Center" VerticalOptions="Center" />
     <BoxView Color="Green" Grid.Row="0" />
 
-    <controls:Swiper Grid.Row="1" Source="{Binding Items}"  />
+    <controls:Swiper Grid.Row="1" Source="{Binding Items}" />
 
     <BoxView Color="Green" Grid.Row="2" />
   </Grid>

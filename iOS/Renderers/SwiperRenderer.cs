@@ -11,12 +11,13 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 using Foundation;
+using System.Threading.Tasks;
+using System.Net.Http;
 
 [assembly: ExportRenderer (typeof(Swiper), typeof(SwiperRenderer))]
 
 namespace Flipper.iOS
 {
-
     public class SwiperRenderer : ViewRenderer<Swiper, UIView>
     {
         private UIView _rootView;
@@ -46,7 +47,7 @@ namespace Flipper.iOS
             };
         }
 
-        protected override void OnElementChanged(ElementChangedEventArgs<Swiper> e)
+        protected async override void OnElementChanged(ElementChangedEventArgs<Swiper> e)
         {
             base.OnElementChanged(e);
 
@@ -67,7 +68,7 @@ namespace Flipper.iOS
 
             this.SetNativeControl(_rootView);
 
-            InitializeImages();
+            await InitializeImagesAsync();
         }
 
         /// <summary>
@@ -92,13 +93,13 @@ namespace Flipper.iOS
             }
         }
 
-        protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        protected async override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             base.OnElementPropertyChanged(sender, e);
 
             if(e.PropertyName == Swiper.SourceProperty.PropertyName)
             {
-                InitializeImages();
+                await InitializeImagesAsync();
             }
 
             if(e.PropertyName == Swiper.WidthProperty.PropertyName ||
@@ -112,7 +113,7 @@ namespace Flipper.iOS
         /// Sets the ImageViews to the correct images based on
         /// the current selected image.
         /// </summary>
-        private void InitializeImages()
+        private async Task InitializeImagesAsync()
         {
             if(this.Element.Source == null)
             {
@@ -133,10 +134,12 @@ namespace Flipper.iOS
                 _currentImageUrl = this.Element.Source.First();
             }
 
+            _centerImageView.Image = await ResolveImage(_currentImageUrl);
+
             var index = this.Element.Source.IndexOf(_currentImageUrl);
             if (index > 0)
             {
-                _leftImageView.Image = ResolveImage(this.Element.Source[index - 1]);
+                _leftImageView.Image = await ResolveImage(this.Element.Source[index - 1]);
             }
             else
             {
@@ -145,37 +148,70 @@ namespace Flipper.iOS
 
             if (index < this.Element.Source.Count() - 1)
             {
-                _rightImageView.Image = ResolveImage(this.Element.Source[index + 1]);
+                _rightImageView.Image = await ResolveImage(this.Element.Source[index + 1]);
             }
             else
             {
                 _rightImageView.Image = null;
             }
 
-            _centerImageView.Image = ResolveImage(_currentImageUrl);
+            // Preload concept code
+            for (int i = (index + 2); i < index + 6; i++)
+            {
+                if (this.Element.Source.Count < (i - 1))
+                {
+                    await ResolveImage(this.Element.Source[i]);
+                }
+            }
         }
 
+       
         /// <summary>
         /// Resolves the source into an UIImage
         /// </summary>
         /// <param name="source">An URL or a resource name</param>
         /// <returns>A UIImage</returns>
-        private UIImage ResolveImage(string source)
+        private async Task<UIImage> ResolveImage(string source)
         {
             if(source.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))
             {
-                using (var url = new NSUrl(source))
-                {
-                    using (var data = NSData.FromUrl(url))
-                    {
-                        return UIImage.LoadFromData(data);
-                    }
-                }
+                return await DownloadImageAsync(source);
             }
             else
             {
                 return UIImage.FromFile(source);
             }
+        }
+
+        // Primitive cache - no life time management or cleanup - also stores the image in full size.
+        // Thinking about abstracting the cache away and inject it instead to make sure it can be
+        // replaced during runtime.
+        private Dictionary<string, byte[]> _cache = new Dictionary<string, byte[]>();
+
+        /// <summary>
+        /// Downloads and creates an UIImage. Caches it in memory.
+        /// </summary>
+        /// <param name="imageUrl">The URL to the image</param>
+        /// <returns></returns>
+        public async Task<UIImage> DownloadImageAsync(string imageUrl)
+        {
+            byte[] content;
+            if (_cache.ContainsKey(imageUrl))
+            {
+                content = _cache[imageUrl];
+            }
+            else
+            {
+                using (var client = new HttpClient())
+                {
+                    content = await client.GetByteArrayAsync(imageUrl);
+                    // TODO Check null and handle it
+                }
+
+                _cache.Add(imageUrl, content);
+            }
+
+            return UIImage.LoadFromData(NSData.FromArray(content));
         }
 
         private void OnPan(UIPanGestureRecognizer recognizer)
@@ -235,7 +271,7 @@ namespace Flipper.iOS
                             {
                                 MoveImagesToOrigin();
                                 _currentImageUrl = this.Element.Source[index - 1];
-                                InitializeImages();
+                                InitializeImagesAsync();
                             }
                         );
 
@@ -254,7 +290,7 @@ namespace Flipper.iOS
                             {
                                 MoveImagesToOrigin();
                                 _currentImageUrl = this.Element.Source[index + 1];
-                                InitializeImages();
+                                InitializeImagesAsync();
                             });
                     }
                     else

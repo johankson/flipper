@@ -21,6 +21,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flipper.WinPhone", "Flipper
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flipper.Droid", "Flipper.Droid\Flipper.Droid.csproj", "{21CBEA92-614E-401F-8FB8-18ADF19920DB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{10D13C17-7A2C-4BEB-BA65-D74B73BCCD0E}"
+	ProjectSection(SolutionItems) = preProject
+		nuget\Flipper.Forms.1.0.0-pre1.nupkg = nuget\Flipper.Forms.1.0.0-pre1.nupkg
+		nuget\Flipper.Forms.1.0.0-pre2.nupkg = nuget\Flipper.Forms.1.0.0-pre2.nupkg
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
@@ -155,6 +161,7 @@ Global
 		{AD3C646D-0C3B-4183-8366-241F6F9F2904}.Release|ARM.ActiveCfg = Release|Any CPU
 		{AD3C646D-0C3B-4183-8366-241F6F9F2904}.Release|iPhone.ActiveCfg = Release|Any CPU
 		{AD3C646D-0C3B-4183-8366-241F6F9F2904}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{AD3C646D-0C3B-4183-8366-241F6F9F2904}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{AD3C646D-0C3B-4183-8366-241F6F9F2904}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{AD3C646D-0C3B-4183-8366-241F6F9F2904}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{AD3C646D-0C3B-4183-8366-241F6F9F2904}.Release|x86.ActiveCfg = Release|Any CPU
