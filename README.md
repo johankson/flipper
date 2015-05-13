@@ -5,7 +5,7 @@ A collection of useful controls for Xamarin Forms. Under development and always 
 # Controls
 
 * Swiper - A simple carousel view for images that is lightway and really fast. The image source is a ObservableCollection of strings that represent image urls. [iOS complete, Droid under dev, WP later on]
-* CardContentView - (Daniel, fix a description)
+* CardContentView - An control that will show a CardView on Android, for iOS and Windows Phone it will behave like a regular ContentView.
 
 # INSTALL
 
