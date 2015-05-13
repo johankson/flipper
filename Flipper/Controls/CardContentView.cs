@@ -29,7 +29,7 @@ namespace Flipper.Controls
 
             public CardContentView()
             {
-                Padding = 20;
+                Padding = Device.OnPlatform<Thickness>(0, 20, 0);
             }
         }
 }
