@@ -1,34 +1,32 @@
-﻿using System;
+﻿using Flipper.Sample.Views;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using Xamarin.Forms;
 
 namespace Flipper.Sample.ViewModels
 {
-    class MainViewModel : INotifyPropertyChanged
+    class MainViewModel
     {
-        ObservableCollection<string> _items;
-        public ObservableCollection<string> Items
+        private INavigation _navigation;
+
+        public MainViewModel(INavigation navigation)
         {
-            get { return _items; }
-            set { _items = value; NotifyPropertyChanged("Items"); }
+            _navigation = navigation;
         }
-        
-        #region INotifyPropertyChanged implementation
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void NotifyPropertyChanged(string propertyName)
+        public ICommand NavigateToSwiper
         {
-            if(PropertyChanged != null)
+            get
             {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                return new Command(async () =>
+                    {
+                        await _navigation.PushAsync(new SwiperView());
+                    });
             }
         }
-
-        #endregion
     }
 }

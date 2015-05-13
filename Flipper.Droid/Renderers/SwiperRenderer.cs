@@ -21,6 +21,7 @@ using Android.Util;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Java.IO;
+using ModernHttpClient;
 
 [assembly: ExportRenderer(typeof(Swiper), typeof(SwiperRenderer))]
 
@@ -106,7 +107,7 @@ namespace Flipper.Droid.Renderers
             // Resize and assign the bitmap
             // TODO Cache here
             // TODO Figure out how to handle slow downloads
-            using(var client = new HttpClient())
+            using(var client = new HttpClient(new NativeMessageHandler()))
             {
                 Bitmap bitmap = null;
 

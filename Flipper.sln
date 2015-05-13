@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{10D13C17
 	ProjectSection(SolutionItems) = preProject
 		nuget\Flipper.Forms.1.0.0-pre1.nupkg = nuget\Flipper.Forms.1.0.0-pre1.nupkg
 		nuget\Flipper.Forms.1.0.0-pre2.nupkg = nuget\Flipper.Forms.1.0.0-pre2.nupkg
+		nuget\Flipper.Forms.1.0.0-pre3.nupkg = nuget\Flipper.Forms.1.0.0-pre3.nupkg
+		nuget\Flipper.Forms.1.0.0-pre4.nupkg = nuget\Flipper.Forms.1.0.0-pre4.nupkg
 	EndProjectSection
 EndProject
 Global
