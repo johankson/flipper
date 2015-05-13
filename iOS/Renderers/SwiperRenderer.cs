@@ -22,9 +22,9 @@ namespace Flipper.iOS
     public class SwiperRenderer : ViewRenderer<Swiper, UIView>
     {
         private UIView _rootView;
-        private UIImageView _centerImageView;
-        private UIImageView _leftImageView;
-        private UIImageView _rightImageView;
+        private AsyncUIImageView _centerImageView;
+        private AsyncUIImageView _leftImageView;
+        private AsyncUIImageView _rightImageView;
         private UIViewAnimationOptions _animationOptions;
         private string _currentImageUrl;
         private nfloat dx = 0;
@@ -40,11 +40,11 @@ namespace Flipper.iOS
             _animationOptions = UIViewAnimationOptions.TransitionNone;
         }
 
-        private UIImageView CreateImageView()
+        private AsyncUIImageView CreateImageView()
         {
-            return new UIImageView()
+            return new AsyncUIImageView()
             {
-                ContentMode = UIViewContentMode.ScaleAspectFit
+                ContentMode = UIViewContentMode.ScaleAspectFit,
             };
         }
 
@@ -75,7 +75,10 @@ namespace Flipper.iOS
 
             this.SetNativeControl(_rootView);
 
-            await InitializeImagesAsync();
+           if (this.Element.Width > 0 && this.Element.Height > 0)
+           {
+                await InitializeImagesAsync();
+           }
         }
 
         /// <summary>
@@ -123,13 +126,24 @@ namespace Flipper.iOS
             if(e.PropertyName == Swiper.SelectedIndexProperty.PropertyName)
             {
                 //TODO Check for index overrun
-                _currentImageUrl = this.Element.Source[this.Element.SelectedIndex];
-                await InitializeImagesAsync();
+                if (_currentImageUrl != this.Element.Source[this.Element.SelectedIndex])
+                {
+                    _currentImageUrl = this.Element.Source[this.Element.SelectedIndex];
+                    await InitializeImagesAsync();
+                }
             }
 
             if(e.PropertyName == Swiper.SelectedUrlProperty.PropertyName)
             {
-                _currentImageUrl = this.Element.SelectedUrl;
+                if (_currentImageUrl != this.Element.SelectedUrl)
+                {
+                    _currentImageUrl = this.Element.SelectedUrl;
+                    await InitializeImagesAsync();
+                }
+            }
+
+            if (e.PropertyName == "Renderer")
+            {
                 await InitializeImagesAsync();
             }
         }
@@ -144,7 +158,7 @@ namespace Flipper.iOS
         {
             if(_isInitializingImages)
             {
-                return;
+             //   return;
             }
 
             try
@@ -184,11 +198,11 @@ namespace Flipper.iOS
                     }
                 }
 
-                _centerImageView.Image = await ResolveImage(_currentImageUrl);
+                await LoadImage(_centerImageView, _currentImageUrl);
 
                 if (index > 0)
                 {
-                    _leftImageView.Image = await ResolveImage(this.Element.Source[index - 1]);
+                    await LoadImage(_leftImageView, this.Element.Source[index - 1]);
 
                     // In order to hide the left image during back navigation we simply hide it
                     _leftImageView.Alpha = 0;
@@ -200,19 +214,22 @@ namespace Flipper.iOS
 
                 if (index < this.Element.Source.Count() - 1)
                 {
-                    _rightImageView.Image = await ResolveImage(this.Element.Source[index + 1]);
+                    await LoadImage(_rightImageView, this.Element.Source[index + 1]);
                 }
                 else
                 {
                     _rightImageView.Image = null;
                 }
-
+             
                 // Preload concept code
                 for (int i = (index + 2); i < index + 6; i++)
                 {
                     if (this.Element.Source.Count > i)
                     {
-                        await ResolveImage(this.Element.Source[i]);
+                        if(!IsInCache(this.Element.Source[0]))
+                        {
+                            DownloadImageAsync(this.Element.Source[0]);
+                        }
                     }
                 }
             }
@@ -220,6 +237,24 @@ namespace Flipper.iOS
             {
                 _isInitializingImages = false;
             }
+        }
+
+        private async Task LoadImage(AsyncUIImageView view, string url)
+        {
+            view.Image = null;
+            if (!IsInCache(url))
+            {
+                view.IsLoading();
+            }
+
+            view.Image = await ResolveImage(url);
+
+            view.IsLoaded();
+        }
+
+        private bool IsInCache(string _currentImageUrl)
+        {
+            return _cache.ContainsKey(_currentImageUrl);
         }
 
        
@@ -267,7 +302,7 @@ namespace Flipper.iOS
                     }
                     catch(Exception ex)
                     {
-                        int i = 42;
+                        return null;
                     }
                     // TODO Check null and handle it
                 }
@@ -338,11 +373,11 @@ namespace Flipper.iOS
                                 _rightImageView.Center = new CGPoint(_width + _width + _halfWidth, _halfHeight);
                             }
                             , 
-                            () =>
+                            async () =>
                             {
                                 MoveImagesToOrigin();
                                 _currentImageUrl = this.Element.Source[index - 1];
-                                InitializeImagesAsync();
+                                await InitializeImagesAsync();
                             }
                         );
 
@@ -358,11 +393,11 @@ namespace Flipper.iOS
                                 _rightImageView.Center = new CGPoint(_halfWidth, _halfHeight);
                             }
                             , 
-                            () =>
+                            async () =>
                             {
                                 MoveImagesToOrigin();
                                 _currentImageUrl = this.Element.Source[index + 1];
-                                InitializeImagesAsync();
+                                await InitializeImagesAsync();
                             });
                     }
                     else

@@ -122,6 +122,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncUIImageView.cs" />
+    <Compile Include="LoadingOverlay.cs" />
     <Compile Include="Renderers\SwiperRenderer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
