@@ -12,7 +12,7 @@ namespace Flipper.Sample
         public App()
         {
             // The root page of your application
-            MainPage = new MainView();
+            MainPage = new NavigationPage(new MainView());
         }
 
         protected override void OnStart()

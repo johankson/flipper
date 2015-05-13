@@ -13,6 +13,7 @@ using System.Linq;
 using Foundation;
 using System.Threading.Tasks;
 using System.Net.Http;
+using ModernHttpClient;
 
 [assembly: ExportRenderer (typeof(Swiper), typeof(SwiperRenderer))]
 
@@ -47,9 +48,15 @@ namespace Flipper.iOS
             };
         }
 
+
         protected async override void OnElementChanged(ElementChangedEventArgs<Swiper> e)
         {
             base.OnElementChanged(e);
+
+            if(this.Element==null)
+            {
+                return;
+            }
 
             _leftImageView = CreateImageView();
             _rightImageView = CreateImageView();
@@ -76,6 +83,11 @@ namespace Flipper.iOS
         /// </summary>
         private void UpdateSizes()
         {
+            if(this.Element == null)
+            {
+                return;
+            }
+
             if (this.Element.Width > 0 && this.Element.Height > 0)
             {
                 _width = (nfloat)this.Element.Width;
@@ -122,72 +134,91 @@ namespace Flipper.iOS
             }
         }
 
+        private bool _isInitializingImages = false;
+
         /// <summary>
         /// Sets the ImageViews to the correct images based on
         /// the current selected image.
         /// </summary>
         private async Task InitializeImagesAsync()
         {
-            if(this.Element.Source == null)
+            if(_isInitializingImages)
             {
                 return;
             }
 
-            if (!this.Element.Source.Any())
+            try
             {
-                _leftImageView.Image = null;
-                _rightImageView.Image = null;
-                _centerImageView.Image = null;
-                _currentImageUrl = null;
-                return;
-            }
+                _isInitializingImages = true;
 
-            if (_currentImageUrl == null)
-            {
-                _currentImageUrl = this.Element.Source.First();
-            }
-
-            // Set some properties on the control
-            var index = this.Element.Source.IndexOf(_currentImageUrl);
-            this.Element.SelectedIndex = index;
-            this.Element.SelectedUrl = _currentImageUrl;
-
-            if(index > this.Element.Source.Count - 3 && this.Element.IsNearEnd != null)
-            {
-                // TODO Fix a setting for the threshold (now it's hardcoded to 3 from the edge)
-                if(this.Element.IsNearEnd.CanExecute(null))
+                if (this.Element.Source == null)
                 {
-                    this.Element.IsNearEnd.Execute(null);
+                    return;
+                }
+
+                if (!this.Element.Source.Any())
+                {
+                    _leftImageView.Image = null;
+                    _rightImageView.Image = null;
+                    _centerImageView.Image = null;
+                    _currentImageUrl = null;
+                    return;
+                }
+
+                if (_currentImageUrl == null)
+                {
+                    _currentImageUrl = this.Element.Source.First();
+                }
+
+                // Set some properties on the control
+                var index = this.Element.Source.IndexOf(_currentImageUrl);
+                this.Element.SelectedIndex = index;
+                this.Element.SelectedUrl = _currentImageUrl;
+
+                if (index > this.Element.Source.Count - 3 && this.Element.IsNearEnd != null)
+                {
+                    // TODO Fix a setting for the threshold (now it's hardcoded to 3 from the edge)
+                    if (this.Element.IsNearEnd.CanExecute(null))
+                    {
+                        this.Element.IsNearEnd.Execute(null);
+                    }
+                }
+
+                _centerImageView.Image = await ResolveImage(_currentImageUrl);
+
+                if (index > 0)
+                {
+                    _leftImageView.Image = await ResolveImage(this.Element.Source[index - 1]);
+
+                    // In order to hide the left image during back navigation we simply hide it
+                    _leftImageView.Alpha = 0;
+                }
+                else
+                {
+                    _leftImageView.Image = null;
+                }
+
+                if (index < this.Element.Source.Count() - 1)
+                {
+                    _rightImageView.Image = await ResolveImage(this.Element.Source[index + 1]);
+                }
+                else
+                {
+                    _rightImageView.Image = null;
+                }
+
+                // Preload concept code
+                for (int i = (index + 2); i < index + 6; i++)
+                {
+                    if (this.Element.Source.Count > i)
+                    {
+                        await ResolveImage(this.Element.Source[i]);
+                    }
                 }
             }
-
-            _centerImageView.Image = await ResolveImage(_currentImageUrl);
-           
-            if (index > 0)
+            finally
             {
-                _leftImageView.Image = await ResolveImage(this.Element.Source[index - 1]);
-            }
-            else
-            {
-                _leftImageView.Image = null;
-            }
-
-            if (index < this.Element.Source.Count() - 1)
-            {
-                _rightImageView.Image = await ResolveImage(this.Element.Source[index + 1]);
-            }
-            else
-            {
-                _rightImageView.Image = null;
-            }
-
-            // Preload concept code
-            for (int i = (index + 2); i < index + 6; i++)
-            {
-                if (this.Element.Source.Count > i)
-                {
-                    await ResolveImage(this.Element.Source[i]);
-                }
+                _isInitializingImages = false;
             }
         }
 
@@ -221,22 +252,29 @@ namespace Flipper.iOS
         /// <returns></returns>
         public async Task<UIImage> DownloadImageAsync(string imageUrl)
         {
-            byte[] content;
+            byte[] content = null;
             if (_cache.ContainsKey(imageUrl))
             {
                 content = _cache[imageUrl];
             }
             else
             {
-                using (var client = new HttpClient())
+                using (var client = new HttpClient(new NativeMessageHandler()))
                 {
-                    content = await client.GetByteArrayAsync(imageUrl);
+                    try
+                    {
+                        content = await client.GetByteArrayAsync(imageUrl);
+                    }
+                    catch(Exception ex)
+                    {
+                        int i = 42;
+                    }
                     // TODO Check null and handle it
                 }
 
                 lock (_cache)
                 {
-                    if (!_cache.ContainsKey(imageUrl))
+                    if (!_cache.ContainsKey(imageUrl) && content != null)
                     {
                         _cache.Add(imageUrl, content);
                     }
@@ -271,7 +309,7 @@ namespace Flipper.iOS
                 var p1 = new CGPoint (p0.X - dx, _centerImageView.Center.Y);
 
                 _centerImageView.Center = p1;
-
+                _leftImageView.Alpha = 1;
                 _leftImageView.Center = new CGPoint(p1.X - _width, _halfHeight);
                 _rightImageView.Center = new CGPoint(p1.X + _width, _halfHeight);
 
@@ -291,6 +329,7 @@ namespace Flipper.iOS
                 {
                     if (p1 > 0 && index > 0)
                     {
+                        // Left swipe
                         Animate(0.2, 0, _animationOptions,
                             () =>
                             {
@@ -310,6 +349,7 @@ namespace Flipper.iOS
                     }
                     else if (p1 < 0 && index < this.Element.Source.Count() - 1)
                     {
+                        // Right swipe
                         Animate(0.2, 0, _animationOptions,
                             () =>
                             {
@@ -343,6 +383,7 @@ namespace Flipper.iOS
 
         private void MoveImagesToOrigin()
         {
+            _leftImageView.Alpha = 0;
             _centerImageView.Center = new CGPoint(_halfWidth, _halfHeight);
             _leftImageView.Center = new CGPoint(-_halfWidth, _halfHeight);
             _rightImageView.Center = new CGPoint(_width + _halfWidth, _halfHeight);
