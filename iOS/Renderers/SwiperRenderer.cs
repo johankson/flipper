@@ -189,9 +189,8 @@ namespace Flipper.iOS
                 this.Element.SelectedIndex = index;
                 this.Element.SelectedUrl = _currentImageUrl;
 
-                if (index > this.Element.Source.Count - 3 && this.Element.IsNearEnd != null)
+                if (index > (this.Element.Source.Count-1) - this.Element.NearEndTreshold && this.Element.IsNearEnd != null)
                 {
-                    // TODO Fix a setting for the threshold (now it's hardcoded to 3 from the edge)
                     if (this.Element.IsNearEnd.CanExecute(null))
                     {
                         this.Element.IsNearEnd.Execute(null);
@@ -256,7 +255,6 @@ namespace Flipper.iOS
         {
             return _cache.ContainsKey(_currentImageUrl);
         }
-
        
         /// <summary>
         /// Resolves the source into an UIImage
@@ -311,7 +309,14 @@ namespace Flipper.iOS
                 {
                     if (!_cache.ContainsKey(imageUrl) && content != null)
                     {
-                        _cache.Add(imageUrl, content);
+                        try
+                        {
+                            _cache.Add(imageUrl, content);
+                        }
+                        catch(Exception ex)
+                        {
+                            // TODO Log, but don't do much more, we don't want a failure here
+                        }
                     }
                 }
             }

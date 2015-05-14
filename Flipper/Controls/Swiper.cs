@@ -23,6 +23,10 @@ namespace Flipper.Controls
             BindableProperty.Create<Swiper, string>(
             (p) => p.SelectedUrl, null);
 
+        public static readonly BindableProperty NearEndThresholdProperty =
+            BindableProperty.Create<Swiper, int>(
+            (p) => p.NearEndTreshold, 3);
+
         /// <summary>
         /// The source of the images represented by a list of URLs.
         /// </summary>
@@ -60,6 +64,22 @@ namespace Flipper.Controls
         {
             get { return (string)GetValue(SelectedUrlProperty); }
             set { SetValue(SelectedUrlProperty, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the value of how near the end of the collection that the IsNearEnd command
+        /// will fire.
+        /// </summary>
+        public int NearEndTreshold
+        {
+            get { return (int)GetValue(NearEndThresholdProperty); }
+            set { 
+                if(value<0)
+                {
+                    throw new ArgumentException("NearEndThreshold must be 0 or higher");
+                }
+                
+                SetValue(NearEndThresholdProperty, value); }
         }
     }
 }
