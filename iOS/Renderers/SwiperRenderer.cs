@@ -126,7 +126,8 @@ namespace Flipper.iOS
             if(e.PropertyName == Swiper.SelectedIndexProperty.PropertyName)
             {
                 //TODO Check for index overrun
-                if (_currentImageUrl != this.Element.Source[this.Element.SelectedIndex])
+                if (this.Element.SelectedIndex > 0 &&
+                    _currentImageUrl != this.Element.Source[this.Element.SelectedIndex])
                 {
                     _currentImageUrl = this.Element.Source[this.Element.SelectedIndex];
                     await InitializeImagesAsync();
@@ -135,7 +136,8 @@ namespace Flipper.iOS
 
             if(e.PropertyName == Swiper.SelectedUrlProperty.PropertyName)
             {
-                if (_currentImageUrl != this.Element.SelectedUrl)
+                if (!String.IsNullOrWhiteSpace(this.Element.SelectedUrl) &&
+                    _currentImageUrl != this.Element.SelectedUrl)
                 {
                     _currentImageUrl = this.Element.SelectedUrl;
                     await InitializeImagesAsync();
@@ -144,6 +146,15 @@ namespace Flipper.iOS
 
             if (e.PropertyName == "Renderer")
             {
+                if(!String.IsNullOrWhiteSpace(this.Element.SelectedUrl))
+                {
+                    _currentImageUrl = this.Element.SelectedUrl;
+                }
+                else if(this.Element.SelectedIndex > 0)
+                {
+                    _currentImageUrl = this.Element.Source[this.Element.SelectedIndex];
+                }
+
                 await InitializeImagesAsync();
             }
         }
