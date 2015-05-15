@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using ModernHttpClient;
 
-[assembly: ExportRenderer (typeof(Swiper), typeof(SwiperRenderer))]
+[assembly: ExportRenderer(typeof(Swiper), typeof(SwiperRenderer))]
 
 namespace Flipper.iOS
 {
@@ -34,6 +34,13 @@ namespace Flipper.iOS
         private nfloat _height = 320f;
         private nfloat _halfWidth;
         private nfloat _halfHeight;
+        private bool _isInitializingImages = false;
+
+        // Primitive cache - no life time management or cleanup - also stores the image in full size.
+        // Thinking about abstracting the cache away and inject it instead to make sure it can be
+        // replaced during runtime.
+        private Dictionary<string, byte[]> _cache = new Dictionary<string, byte[]>();
+
 
         public SwiperRenderer()
         {
@@ -48,12 +55,11 @@ namespace Flipper.iOS
             };
         }
 
-
         protected async override void OnElementChanged(ElementChangedEventArgs<Swiper> e)
         {
             base.OnElementChanged(e);
 
-            if(this.Element==null)
+            if (this.Element == null)
             {
                 return;
             }
@@ -63,7 +69,7 @@ namespace Flipper.iOS
 
             _centerImageView = CreateImageView();
             _centerImageView.UserInteractionEnabled = true;
-            _centerImageView.AddGestureRecognizer (new UIPanGestureRecognizer(OnPan));
+            _centerImageView.AddGestureRecognizer(new UIPanGestureRecognizer(OnPan));
 
             UpdateSizes();
 
@@ -75,10 +81,10 @@ namespace Flipper.iOS
 
             this.SetNativeControl(_rootView);
 
-           if (this.Element.Width > 0 && this.Element.Height > 0)
-           {
+            if (this.Element.Width > 0 && this.Element.Height > 0)
+            {
                 await InitializeImagesAsync();
-           }
+            }
         }
 
         /// <summary>
@@ -86,7 +92,7 @@ namespace Flipper.iOS
         /// </summary>
         private void UpdateSizes()
         {
-            if(this.Element == null)
+            if (this.Element == null)
             {
                 return;
             }
@@ -112,20 +118,19 @@ namespace Flipper.iOS
         {
             base.OnElementPropertyChanged(sender, e);
 
-            if(e.PropertyName == Swiper.SourceProperty.PropertyName)
+            if (e.PropertyName == Swiper.SourceProperty.PropertyName)
             {
                 await InitializeImagesAsync();
             }
 
-            if(e.PropertyName == Swiper.WidthProperty.PropertyName ||
-               e.PropertyName == Swiper.HeightProperty.PropertyName)
+            if (e.PropertyName == Swiper.WidthProperty.PropertyName || e.PropertyName == Swiper.HeightProperty.PropertyName)
             {
                 UpdateSizes();
             }
 
-            if(e.PropertyName == Swiper.SelectedIndexProperty.PropertyName)
+            if (e.PropertyName == Swiper.SelectedIndexProperty.PropertyName)
             {
-                //TODO Check for index overrun
+                // TODO Check for index overrun
                 if (this.Element.SelectedIndex > 0 &&
                     _currentImageUrl != this.Element.Source[this.Element.SelectedIndex])
                 {
@@ -134,9 +139,9 @@ namespace Flipper.iOS
                 }
             }
 
-            if(e.PropertyName == Swiper.SelectedUrlProperty.PropertyName)
+            if (e.PropertyName == Swiper.SelectedUrlProperty.PropertyName)
             {
-                if (!String.IsNullOrWhiteSpace(this.Element.SelectedUrl) &&
+                if (!string.IsNullOrWhiteSpace(this.Element.SelectedUrl) &&
                     _currentImageUrl != this.Element.SelectedUrl)
                 {
                     _currentImageUrl = this.Element.SelectedUrl;
@@ -146,11 +151,11 @@ namespace Flipper.iOS
 
             if (e.PropertyName == "Renderer")
             {
-                if(!String.IsNullOrWhiteSpace(this.Element.SelectedUrl))
+                if (!String.IsNullOrWhiteSpace(this.Element.SelectedUrl))
                 {
                     _currentImageUrl = this.Element.SelectedUrl;
                 }
-                else if(this.Element.SelectedIndex > 0)
+                else if (this.Element.SelectedIndex > 0)
                 {
                     _currentImageUrl = this.Element.Source[this.Element.SelectedIndex];
                 }
@@ -159,17 +164,15 @@ namespace Flipper.iOS
             }
         }
 
-        private bool _isInitializingImages = false;
-
         /// <summary>
         /// Sets the ImageViews to the correct images based on
         /// the current selected image.
         /// </summary>
         private async Task InitializeImagesAsync()
         {
-            if(_isInitializingImages)
+            if (_isInitializingImages)
             {
-             //   return;
+                return;
             }
 
             try
@@ -200,7 +203,7 @@ namespace Flipper.iOS
                 this.Element.SelectedIndex = index;
                 this.Element.SelectedUrl = _currentImageUrl;
 
-                if (index > (this.Element.Source.Count-1) - this.Element.NearEndTreshold && this.Element.IsNearEnd != null)
+                if (index > (this.Element.Source.Count - 1) - this.Element.NearEndTreshold && this.Element.IsNearEnd != null)
                 {
                     if (this.Element.IsNearEnd.CanExecute(null))
                     {
@@ -236,8 +239,9 @@ namespace Flipper.iOS
                 {
                     if (this.Element.Source.Count > i)
                     {
-                        if(!IsInCache(this.Element.Source[0]))
+                        if (!IsInCache(this.Element.Source[0]))
                         {
+                            // We don't want to await this
                             DownloadImageAsync(this.Element.Source[0]);
                         }
                     }
@@ -257,7 +261,7 @@ namespace Flipper.iOS
                 view.IsLoading();
             }
 
-            view.Image = await ResolveImage(url);
+            view.Image = await ResolveImageAsync(url);
 
             view.IsLoaded();
         }
@@ -272,9 +276,9 @@ namespace Flipper.iOS
         /// </summary>
         /// <param name="source">An URL or a resource name</param>
         /// <returns>A UIImage</returns>
-        private async Task<UIImage> ResolveImage(string source)
+        private async Task<UIImage> ResolveImageAsync(string source)
         {
-            if(source.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))
+            if (source.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))
             {
                 return await DownloadImageAsync(source);
             }
@@ -284,11 +288,7 @@ namespace Flipper.iOS
             }
         }
 
-        // Primitive cache - no life time management or cleanup - also stores the image in full size.
-        // Thinking about abstracting the cache away and inject it instead to make sure it can be
-        // replaced during runtime.
-        private Dictionary<string, byte[]> _cache = new Dictionary<string, byte[]>();
-
+     
         /// <summary>
         /// Downloads and creates an UIImage. Caches it in memory.
         /// </summary>
@@ -309,7 +309,7 @@ namespace Flipper.iOS
                     {
                         content = await client.GetByteArrayAsync(imageUrl);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         return null;
                     }
@@ -324,7 +324,7 @@ namespace Flipper.iOS
                         {
                             _cache.Add(imageUrl, content);
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             // TODO Log, but don't do much more, we don't want a failure here
                         }
@@ -340,7 +340,7 @@ namespace Flipper.iOS
             if ((recognizer.State == UIGestureRecognizerState.Began || 
                  recognizer.State == UIGestureRecognizerState.Changed) && (recognizer.NumberOfTouches == 1)) {
 
-                var p0 = recognizer.LocationInView (this.NativeView);
+                var p0 = recognizer.LocationInView(this.NativeView);
 
                 if (startX == 0)
                 {
@@ -357,7 +357,7 @@ namespace Flipper.iOS
                     dy = p0.Y - _centerImageView.Center.Y;
                 }
 
-                var p1 = new CGPoint (p0.X - dx, _centerImageView.Center.Y);
+                var p1 = new CGPoint(p0.X - dx, _centerImageView.Center.Y);
 
                 _centerImageView.Center = p1;
                 _leftImageView.Alpha = 1;
@@ -370,7 +370,7 @@ namespace Flipper.iOS
                 dx = 0;
                 dy = 0;
 
-                var p0 = recognizer.LocationInView (this.NativeView);
+                var p0 = recognizer.LocationInView(this.NativeView);
                 var p1 = p0.X - startX;
                 startX = 0;
 
@@ -381,34 +381,25 @@ namespace Flipper.iOS
                     if (p1 > 0 && index > 0)
                     {
                         // Left swipe
-                        Animate(0.2, 0, _animationOptions,
-                            () =>
-                            {
+                        Animate(0.2, 0, _animationOptions, () => {
                                 _centerImageView.Center = new CGPoint(_width + _halfWidth, _halfHeight);
                                 _leftImageView.Center = new CGPoint(_width - _halfWidth, _halfHeight);
                                 _rightImageView.Center = new CGPoint(_width + _width + _halfWidth, _halfHeight);
-                            }
-                            , 
-                            async () =>
+                            }, async () =>
                             {
                                 MoveImagesToOrigin();
                                 _currentImageUrl = this.Element.Source[index - 1];
                                 await InitializeImagesAsync();
-                            }
-                        );
-
+                            });
                     }
                     else if (p1 < 0 && index < this.Element.Source.Count() - 1)
                     {
                         // Right swipe
-                        Animate(0.2, 0, _animationOptions,
-                            () =>
-                            {
+                        Animate(0.2, 0, _animationOptions, () => {
                                 _centerImageView.Center = new CGPoint(_halfWidth - _width, _halfHeight);
                                 _leftImageView.Center = new CGPoint(-_halfWidth - _width, _halfHeight);
                                 _rightImageView.Center = new CGPoint(_halfWidth, _halfHeight);
-                            }
-                            , 
+                            }, 
                             async () =>
                             {
                                 MoveImagesToOrigin();
@@ -418,20 +409,19 @@ namespace Flipper.iOS
                     }
                     else
                     {
-                        Animate(0.2, 0, _animationOptions,
-                            MoveImagesToOrigin, 
-                            null);
+                        Animate(0.2, 0, _animationOptions, MoveImagesToOrigin,  null);
                     }
                 }
                 else
                 {
-                    Animate(0.2, 0, _animationOptions,
-                        MoveImagesToOrigin, 
-                        null);
+                    Animate(0.2, 0, _animationOptions, MoveImagesToOrigin, null);
                 }
             }
         }
 
+        /// <summary>
+        /// Resets the positions of the AsyncImageViews
+        /// </summary>
         private void MoveImagesToOrigin()
         {
             _leftImageView.Alpha = 0;
