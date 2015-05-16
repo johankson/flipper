@@ -309,8 +309,9 @@ namespace Flipper.iOS
                     {
                         content = await client.GetByteArrayAsync(imageUrl);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
+                        // TODO Deside what to do with this
                         return null;
                     }
                     // TODO Check null and handle it
@@ -324,7 +325,7 @@ namespace Flipper.iOS
                         {
                             _cache.Add(imageUrl, content);
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                             // TODO Log, but don't do much more, we don't want a failure here
                         }

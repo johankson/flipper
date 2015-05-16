@@ -114,10 +114,10 @@ namespace Flipper.Droid.Renderers
                 try
                 {
 
-                    bitmap = BitmapFactory.DecodeResource(this.Resources, Resource.Drawable.arrow);
+                    //bitmap = BitmapFactory.DecodeResource(this.Resources, Resource.Drawable.arrow);
 
-                    //var stream = await client.GetStreamAsync(new Uri(url));
-                    //bitmap = await BitmapFactory.DecodeStreamAsync(stream);
+                    var stream = await client.GetStreamAsync(new Uri(url));
+                    bitmap = await BitmapFactory.DecodeStreamAsync(stream);
                 }
                 catch(Exception ex)
                 {
