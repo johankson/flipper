@@ -33,11 +33,14 @@ namespace Flipper.Droid.Renderers
         private Bitmap _centerBitmap = null;
         private Bitmap _leftBitmap = null;
         private Bitmap _rightBitmap = null;
+        private AsyncImageView _centerImage = null;
+        private AsyncImageView _leftImage = null;
         private string _currentImageUrl;
         
         public SwiperRenderer()
         {
             this.SetWillNotDraw(false);
+            
         }
 
         protected async override void OnElementChanged(ElementChangedEventArgs<Swiper> e)
@@ -48,6 +51,9 @@ namespace Flipper.Droid.Renderers
 
             _rootView = new View(Context);
             SetNativeControl(_rootView);
+
+            _centerImage = new AsyncImageView(Context);
+      
         }
 
         private async Task InitializeImages()
@@ -114,10 +120,10 @@ namespace Flipper.Droid.Renderers
                 try
                 {
 
-                    //bitmap = BitmapFactory.DecodeResource(this.Resources, Resource.Drawable.arrow);
+                    bitmap = BitmapFactory.DecodeResource(this.Resources, Resource.Drawable.arrow);
 
-                    var stream = await client.GetStreamAsync(new Uri(url));
-                    bitmap = await BitmapFactory.DecodeStreamAsync(stream);
+                    //var stream = await client.GetStreamAsync(new Uri(url));
+                    //bitmap = await BitmapFactory.DecodeStreamAsync(stream);
                 }
                 catch(Exception ex)
                 {
@@ -134,19 +140,27 @@ namespace Flipper.Droid.Renderers
 
         public async override void Draw(Android.Graphics.Canvas canvas)
         {
+
+
             if(_reinitializeImages)
             {
                 await InitializeImages();
                 _reinitializeImages = false;
             }
 
+            // Clear the canvas
+            canvas.DrawARGB(255, 255, 255, 255);
+
             if(_centerBitmap != null)
             {
                 var dest = CalculateCentrationRect(_centerBitmap);
-                canvas.DrawBitmap(_centerBitmap, dest.Left + _swipeCurrectXOffset, dest.Top, null);
+                 canvas.DrawBitmap(_centerBitmap, dest.Left + _swipeCurrectXOffset, dest.Top, null);
+             //   _centerImage.Layout(0, 0, 200, 200);
+             //   _centerImage.Layout
+             //   _centerImage.Draw(canvas);
             }
 
-            if(_leftBitmap != null)
+            if (_leftBitmap != null)
             {
                 var dest = CalculateCentrationRect(_leftBitmap);
                 canvas.DrawBitmap(_leftBitmap, dest.Left + _swipeCurrectXOffset - dest.Width(), dest.Top, null);
@@ -218,15 +232,15 @@ namespace Flipper.Droid.Renderers
                 scaleFactor = (int)resizefactor;
             }
 
-            if (heightfactor != 0 || widthfactor != 0)
-            {
+           // if (heightfactor != 0 || widthfactor != 0)
+           // {
                 double W = bitmap.Width / resizefactor;
                 double H = bitmap.Height / resizefactor;
 
                 return new Rect(0, 0, (int)W, (int)H);
-            }
+            //}
 
-            throw new Exception("That's not right?");
+            
         }
 
         /// <summary>
@@ -275,7 +289,16 @@ namespace Flipper.Droid.Renderers
                     return true;
 
                 case MotionEventActions.Up:
-                    _swipeCurrectXOffset = 0f;
+                  //  _swipeCurrectXOffset = 0f;
+
+                    // Replace with some other animation function...
+                    var a = new Xamarin.Forms.Animation(
+                        (d)=>
+                            {
+                                _swipeCurrectXOffset = (float)d;
+                            }, 
+                            _swipeCurrectXOffset, 0, Easing.CubicInOut, null);
+                    
                     Invalidate();
                     return true;
 

@@ -74,6 +74,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncImageView.cs" />
     <Compile Include="Renderers\CardContentViewRenderer.cs" />
     <Compile Include="Renderers\SwiperRenderer.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
