@@ -31,11 +31,10 @@ namespace Flipper.Droid.Renderers
     public class SwiperRenderer : ViewRenderer<Swiper, View>
     {
         private View _rootView;
-        private Bitmap _centerBitmap = null;
-        private Bitmap _leftBitmap = null;
-        private Bitmap _rightBitmap = null;
-        private AsyncImageView _centerImage = null;
-        private AsyncImageView _leftImage = null;
+        private AsyncImageLoader _centerBitmap = null;
+        private AsyncImageLoader _leftBitmap = null;
+        private AsyncImageLoader _rightBitmap = null;
+       
         private string _currentImageUrl;
         private float _width;
         private float _halfWidth;
@@ -56,9 +55,6 @@ namespace Flipper.Droid.Renderers
 
             _rootView = new View(Context);
             SetNativeControl(_rootView);
-
-            _centerImage = new AsyncImageView(Context);
-      
         }
 
         protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -67,7 +63,7 @@ namespace Flipper.Droid.Renderers
 
             if (e.PropertyName == Swiper.SourceProperty.PropertyName)
             {
-            //    await InitializeImagesAsync();
+                InitializeImages();
             }
 
             if (e.PropertyName == Swiper.WidthProperty.PropertyName || e.PropertyName == Swiper.HeightProperty.PropertyName)
@@ -82,7 +78,7 @@ namespace Flipper.Droid.Renderers
                     _currentImageUrl != this.Element.Source[this.Element.SelectedIndex])
                 {
                     _currentImageUrl = this.Element.Source[this.Element.SelectedIndex];
-               //     await InitializeImagesAsync();
+                    InitializeImages();
                 }
             }
 
@@ -92,7 +88,7 @@ namespace Flipper.Droid.Renderers
                     _currentImageUrl != this.Element.SelectedUrl)
                 {
                     _currentImageUrl = this.Element.SelectedUrl;
-                 //   await InitializeImagesAsync();
+                    InitializeImages();
                 }
             }
 
@@ -106,12 +102,10 @@ namespace Flipper.Droid.Renderers
                 {
                     _currentImageUrl = this.Element.Source[this.Element.SelectedIndex];
                 }
-
-              //  await InitializeImagesAsync();
             }
         }
 
-        private async Task InitializeImages()
+        private void InitializeImages()
         {
             if (this.Element.Source == null)
             {
@@ -137,7 +131,7 @@ namespace Flipper.Droid.Renderers
             var index = this.Element.Source.IndexOf(_currentImageUrl);
             if (index > 0)
             {
-                _leftBitmap = await ResolveImage(this.Element.Source[index - 1]);
+                _leftBitmap = ResolveImage(this.Element.Source[index - 1]);
             }
             else
             {
@@ -146,15 +140,26 @@ namespace Flipper.Droid.Renderers
 
             if (index < this.Element.Source.Count() - 1)
             {
-                _rightBitmap = await ResolveImage(this.Element.Source[index + 1]);
+                _rightBitmap = ResolveImage(this.Element.Source[index + 1]);
             }
             else
             {
                 _rightBitmap = null;
             }
 
-            _centerBitmap = await ResolveImage(_currentImageUrl);
+            _centerBitmap = ResolveImage(_currentImageUrl);
             Invalidate();
+
+            this.Element.SelectedIndex = index;
+            this.Element.SelectedUrl = _currentImageUrl;
+
+            if (index > (this.Element.Source.Count - 1) - this.Element.NearEndTreshold && this.Element.IsNearEnd != null)
+            {
+                if (this.Element.IsNearEnd.CanExecute(null))
+                {
+                    this.Element.IsNearEnd.Execute(null);
+                }
+            }
         }
 
         /// <summary>
@@ -163,69 +168,97 @@ namespace Flipper.Droid.Renderers
         /// </summary>
         /// <param name="url">The URL to the image</param>
         /// <returns>A resized, nice bitmap</returns>
-        private async Task<Bitmap> ResolveImage(string url)
+        private AsyncImageLoader ResolveImage(string url)
         {
-            // Resize and assign the bitmap
-            // TODO Cache here
-            // TODO Figure out how to handle slow downloads
-            using(var client = new HttpClient(new NativeMessageHandler()))
+            if (_cache.ContainsKey(url))
             {
-                Bitmap bitmap = null;
+                return _cache[url];
+            }
 
-                try
+            // Resize and assign the bitmap
+            using (var client = new HttpClient(new NativeMessageHandler()))
+            {
+                var loader = new AsyncImageLoader(url);
+                loader.Completed = (a) =>
                 {
+                    var rect = CalculateLargestRect(a.Bitmap);
+                    loader.Bitmap = ResizeBitmap(a.Bitmap, rect.Width(), rect.Height());
+                    Device.BeginInvokeOnMainThread(() => Invalidate());
+                };
 
-                    bitmap = BitmapFactory.DecodeResource(this.Resources, Resource.Drawable.arrow);
-
-                    //var stream = await client.GetStreamAsync(new Uri(url));
-                    //bitmap = await BitmapFactory.DecodeStreamAsync(stream);
-                }
-                catch(Exception ex)
+                lock (_cache)
                 {
-                    // TODO Log
-                    bitmap = BitmapFactory.DecodeResource(this.Resources, Resource.Drawable.arrow);
+                    if (!_cache.ContainsKey(url))
+                    {
+                        _cache.Add(url, loader);
+                    }
                 }
 
-                var rect = CalculateLargestRect(bitmap);
-                return ResizeBitmap(bitmap, rect.Width(), rect.Height());
+                return loader;
             }
         }
 
         bool _reinitializeImages = true;
 
-        public async override void Draw(Android.Graphics.Canvas canvas)
+        /// <summary>
+        /// Quick fix cache (replace with something better if needed)
+        /// </summary>
+        private Dictionary<string, AsyncImageLoader> _cache = new Dictionary<string, AsyncImageLoader>();
+
+        public override void Draw(Android.Graphics.Canvas canvas)
         {
-
-
             if(_reinitializeImages)
             {
-                await InitializeImages();
+                InitializeImages();
                 _reinitializeImages = false;
             }
+
+            UpdateSizes();
 
             // Clear the canvas
             canvas.DrawARGB(255, 255, 255, 255);
 
-            if(_centerBitmap != null)
+            if(_centerBitmap != null && _centerBitmap.Bitmap != null)
             {
-                var dest = CalculateCentrationRect(_centerBitmap);
-                 canvas.DrawBitmap(_centerBitmap, dest.Left + _swipeCurrectXOffset, dest.Top, null);
-             //   _centerImage.Layout(0, 0, 200, 200);
-             //   _centerImage.Layout
-             //   _centerImage.Draw(canvas);
+                var dest = CalculateCentrationRect(_centerBitmap.Bitmap);
+                 canvas.DrawBitmap(_centerBitmap.Bitmap, dest.Left + _swipeCurrectXOffset, dest.Top, null);
+            }
+            else if (_centerBitmap != null)
+            {
+                DrawLoadingText(canvas, 0);
             }
 
-            if (_leftBitmap != null)
+            if (_leftBitmap != null && _leftBitmap.Bitmap != null)
             {
-                var dest = CalculateCentrationRect(_leftBitmap);
-                canvas.DrawBitmap(_leftBitmap, dest.Left + _swipeCurrectXOffset - dest.Width(), dest.Top, null);
+                var dest = CalculateCentrationRect(_leftBitmap.Bitmap);
+                canvas.DrawBitmap(_leftBitmap.Bitmap, dest.Left + _swipeCurrectXOffset - this.Width, dest.Top, null);
+            }
+            else if (_leftBitmap != null)
+            {
+                DrawLoadingText(canvas, -Width);
             }
 
-            if (_rightBitmap != null)
+            if (_rightBitmap != null && _rightBitmap.Bitmap != null)
             {
-                var dest = CalculateCentrationRect(_rightBitmap);
-                canvas.DrawBitmap(_rightBitmap, dest.Left + _swipeCurrectXOffset + dest.Width(), dest.Top, null);
+                var dest = CalculateCentrationRect(_rightBitmap.Bitmap);
+                canvas.DrawBitmap(_rightBitmap.Bitmap, dest.Left + _swipeCurrectXOffset + this.Width, dest.Top, null);
             }
+            else if (_rightBitmap != null)
+            {
+                DrawLoadingText(canvas, Width);
+            }
+        }
+
+        private void DrawLoadingText(Android.Graphics.Canvas canvas, float offset)
+        {
+            // TODO Perhaps replace with an animation later on?
+            Paint paint = new Paint();
+            paint.Color = Xamarin.Forms.Color.Black.ToAndroid();
+            paint.SetStyle(Paint.Style.Fill);
+            paint.TextSize = 100;
+            var textWidth = paint.MeasureText("Loading...");
+
+            canvas.DrawText("Loading...", this._halfWidth - (textWidth / 2) + _swipeCurrectXOffset + offset, this._halfHeight, paint);
         }
 
         /// <summary>
@@ -267,14 +300,8 @@ namespace Flipper.Droid.Renderers
             int scaleFactor = 1;
             double resizefactor = 1;
 
-            if (bitmap.Width > this.Width)
-            {
-                widthfactor = (double)bitmap.Width / (double)this.Width;
-            }
-            if (bitmap.Height > this.Height)
-            {
-                heightfactor = (double)bitmap.Height / (double)this.Height;
-            }
+            widthfactor = (double)bitmap.Width / (double)this.Width;
+            heightfactor = (double)bitmap.Height / (double)this.Height;
 
             if (widthfactor > heightfactor)
             {
@@ -287,15 +314,10 @@ namespace Flipper.Droid.Renderers
                 scaleFactor = (int)resizefactor;
             }
 
-           // if (heightfactor != 0 || widthfactor != 0)
-           // {
-                double W = bitmap.Width / resizefactor;
-                double H = bitmap.Height / resizefactor;
+            double W = bitmap.Width / resizefactor;
+            double H = bitmap.Height / resizefactor;
 
-                return new Rect(0, 0, (int)W, (int)H);
-            //}
-
-            
+            return new Rect(0, 0, (int)W, (int)H);
         }
 
         /// <summary>
@@ -382,6 +404,7 @@ namespace Flipper.Droid.Renderers
             {
                 _swipeCurrectXOffset = 0f;
                 _currentImageUrl = this.Element.Source[index - 1];
+                InitializeImages();
             };
         }
 
@@ -400,6 +423,7 @@ namespace Flipper.Droid.Renderers
             {
                 _swipeCurrectXOffset = 0f;
                 _currentImageUrl = this.Element.Source[index + 1];
+                InitializeImages();
             };
         }
 
@@ -424,12 +448,12 @@ namespace Flipper.Droid.Renderers
                 return;
             }
 
-            if (this.Element.Width > 0 && this.Element.Height > 0)
+            if (this.Width > 0 && this.Height > 0)
             {
-                _width = (float)this.Element.Width;
+                _width = this.Width;
                 _halfWidth = _width / 2;
 
-                _height = (float)this.Element.Height;
+                _height = this.Height;
                 _halfHeight = _height / 2;
             }
         }
