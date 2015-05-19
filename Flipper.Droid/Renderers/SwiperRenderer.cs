@@ -22,6 +22,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Java.IO;
 using ModernHttpClient;
+using Android.Animation;
 
 [assembly: ExportRenderer(typeof(Swiper), typeof(SwiperRenderer))]
 
@@ -36,6 +37,10 @@ namespace Flipper.Droid.Renderers
         private AsyncImageView _centerImage = null;
         private AsyncImageView _leftImage = null;
         private string _currentImageUrl;
+        private float _width;
+        private float _halfWidth;
+        private float _height;
+        private float _halfHeight;
         
         public SwiperRenderer()
         {
@@ -47,13 +52,63 @@ namespace Flipper.Droid.Renderers
         {
             base.OnElementChanged(e);
             
-            // UpdateSizes();
+            UpdateSizes();
 
             _rootView = new View(Context);
             SetNativeControl(_rootView);
 
             _centerImage = new AsyncImageView(Context);
       
+        }
+
+        protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            base.OnElementPropertyChanged(sender, e);
+
+            if (e.PropertyName == Swiper.SourceProperty.PropertyName)
+            {
+            //    await InitializeImagesAsync();
+            }
+
+            if (e.PropertyName == Swiper.WidthProperty.PropertyName || e.PropertyName == Swiper.HeightProperty.PropertyName)
+            {
+                UpdateSizes();
+            }
+
+            if (e.PropertyName == Swiper.SelectedIndexProperty.PropertyName)
+            {
+                // TODO Check for index overrun
+                if (this.Element.SelectedIndex > 0 &&
+                    _currentImageUrl != this.Element.Source[this.Element.SelectedIndex])
+                {
+                    _currentImageUrl = this.Element.Source[this.Element.SelectedIndex];
+               //     await InitializeImagesAsync();
+                }
+            }
+
+            if (e.PropertyName == Swiper.SelectedUrlProperty.PropertyName)
+            {
+                if (!string.IsNullOrWhiteSpace(this.Element.SelectedUrl) &&
+                    _currentImageUrl != this.Element.SelectedUrl)
+                {
+                    _currentImageUrl = this.Element.SelectedUrl;
+                 //   await InitializeImagesAsync();
+                }
+            }
+
+            if (e.PropertyName == "Renderer")
+            {
+                if (!String.IsNullOrWhiteSpace(this.Element.SelectedUrl))
+                {
+                    _currentImageUrl = this.Element.SelectedUrl;
+                }
+                else if (this.Element.SelectedIndex > 0)
+                {
+                    _currentImageUrl = this.Element.Source[this.Element.SelectedIndex];
+                }
+
+              //  await InitializeImagesAsync();
+            }
         }
 
         private async Task InitializeImages()
@@ -264,19 +319,6 @@ namespace Flipper.Droid.Renderers
             return resizedBitmap;
         }
 
-        //private Android.Graphics.Bitmap ResolveImage(string source)
-        //{
-           
-        //}
-
-        private ImageView CreateImageView()
-        {
-            return new ImageView(Context)
-                {
-                     
-                };
-        }
-
         private float _swipeStartX = 0f;
         private float _swipeCurrectXOffset = 0f;
 
@@ -291,15 +333,30 @@ namespace Flipper.Droid.Renderers
                 case MotionEventActions.Up:
                   //  _swipeCurrectXOffset = 0f;
 
-                    // Replace with some other animation function...
-                    var a = new Xamarin.Forms.Animation(
-                        (d)=>
-                            {
-                                _swipeCurrectXOffset = (float)d;
-                            }, 
-                            _swipeCurrectXOffset, 0, Easing.CubicInOut, null);
+                    var index = this.Element.Source.IndexOf(_currentImageUrl);
                     
-                    Invalidate();
+                    if(Math.Abs(_swipeCurrectXOffset)>30) // TODO Add a variable for the trigger offset?
+                    {
+                        if(_swipeCurrectXOffset > 0 && index > 0)
+                        {
+                            // Left swipe
+                            AnimateLeft(index);
+                        }
+                        else if (_swipeCurrectXOffset < 0 && index < this.Element.Source.Count() -1)
+                        {
+                            // Right swipe
+                            AnimateRight(index);
+                        }
+                        else
+                        {
+                            AnimateBackToStart();
+                        }
+                    }
+                    else
+                    {
+                        AnimateBackToStart();
+                    }
+                    
                     return true;
 
                 case MotionEventActions.Move:
@@ -309,6 +366,72 @@ namespace Flipper.Droid.Renderers
             }
 
             return base.OnTouchEvent(e);
+        }
+
+        private void AnimateLeft(int index)
+        {
+            var animator = ValueAnimator.OfFloat(_swipeCurrectXOffset, this.Width);
+            animator.Start();
+
+            animator.Update += (object sender, ValueAnimator.AnimatorUpdateEventArgs args) =>
+            {
+                _swipeCurrectXOffset = (float)args.Animation.AnimatedValue;
+                Invalidate();
+            };
+            animator.AnimationEnd += (object sender, EventArgs args) =>
+            {
+                _swipeCurrectXOffset = 0f;
+                _currentImageUrl = this.Element.Source[index - 1];
+            };
+        }
+
+        private void AnimateRight(int index)
+        {
+            var animator = ValueAnimator.OfFloat(_swipeCurrectXOffset, -(this.Width));
+            animator.SetDuration(200);
+            animator.Start();
+
+            animator.Update += (object sender, ValueAnimator.AnimatorUpdateEventArgs args) =>
+            {
+                _swipeCurrectXOffset = (float)args.Animation.AnimatedValue;
+                Invalidate();
+            };
+            animator.AnimationEnd += (object sender, EventArgs args) =>
+            {
+                _swipeCurrectXOffset = 0f;
+                _currentImageUrl = this.Element.Source[index + 1];
+            };
+        }
+
+        private void AnimateBackToStart()
+        {
+            var animator = ValueAnimator.OfFloat(_swipeCurrectXOffset, 0);
+            animator.SetDuration(200);
+            animator.Start();
+
+            animator.Update += (object sender, ValueAnimator.AnimatorUpdateEventArgs args) =>
+            {
+                float newValue = (float)args.Animation.AnimatedValue;
+                _swipeCurrectXOffset = newValue;
+                Invalidate();
+            };
+        }
+
+        private void UpdateSizes()
+        {
+            if (this.Element == null)
+            {
+                return;
+            }
+
+            if (this.Element.Width > 0 && this.Element.Height > 0)
+            {
+                _width = (float)this.Element.Width;
+                _halfWidth = _width / 2;
+
+                _height = (float)this.Element.Height;
+                _halfHeight = _height / 2;
+            }
         }
     }
 }
