@@ -44,10 +44,9 @@ namespace Flipper.Droid.Renderers
         public SwiperRenderer()
         {
             this.SetWillNotDraw(false);
-            
         }
 
-        protected async override void OnElementChanged(ElementChangedEventArgs<Swiper> e)
+        protected override void OnElementChanged(ElementChangedEventArgs<Swiper> e)
         {
             base.OnElementChanged(e);
             

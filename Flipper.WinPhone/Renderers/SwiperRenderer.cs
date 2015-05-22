@@ -3,6 +3,7 @@ using Flipper.WinPhone.Renderers;
 using Microsoft.Phone.Controls;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace Flipper.WinPhone.Renderers
         private System.Windows.Controls.Image _prevImage = new System.Windows.Controls.Image();
         private System.Windows.Controls.Image _image = new System.Windows.Controls.Image();
         private System.Windows.Controls.Image _nextImage = new System.Windows.Controls.Image();
+        private Panorama _root;
 
         public SwiperRenderer()
         {
@@ -39,36 +41,42 @@ namespace Flipper.WinPhone.Renderers
                 _nextImage.Source = new BitmapImage(new Uri(Element.Source[1]));
             }
 
-            var panorama = new Panorama();
-            panorama.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 255, 255, 255));
+            _root = new Panorama();
+            _root.SelectionChanged += panorama_SelectionChanged;
+            _root.ManipulationCompleted += panorama_ManipulationCompleted;
 
-            
+            _root.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 255, 255, 255));
 
             if (Element.Source.Count > 1)
             {
-                panorama.Items.Add(_prevImage);
+                _root.Items.Add(new PanoramaItem() { Content = _prevImage });
             }
 
-            panorama.Items.Add(_image);
+            _root.Items.Add(new PanoramaItem() { Content = _image });
 
             if (Element.Source.Count > 2)
             {
-                panorama.Items.Add(_nextImage);
+                _root.Items.Add(new PanoramaItem() { Content = _nextImage });
             }
 
             if (Element.Source.Count > 1)
             {
-                panorama.TabIndex = 1;
+                _root.TabIndex = 1;
             }
-            
-            panorama.SelectionChanged += panorama_SelectionChanged;
 
-            SetNativeControl(panorama);
+            
+
+            SetNativeControl(_root);
+        }
+
+        void panorama_ManipulationCompleted(object sender, System.Windows.Input.ManipulationCompletedEventArgs e)
+        {
+            var i = 42;
         }
 
         void panorama_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            
+            int i = 42;
         }
     }
 }
