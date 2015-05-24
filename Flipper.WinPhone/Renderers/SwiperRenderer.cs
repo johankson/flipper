@@ -18,19 +18,15 @@ namespace Flipper.WinPhone.Renderers
 {
     public class SwiperRenderer : ViewRenderer<Swiper, Panorama>
     {
-      
         private System.Windows.Controls.Image _image1 = new System.Windows.Controls.Image();
         private System.Windows.Controls.Image _image2 = new System.Windows.Controls.Image();
         private System.Windows.Controls.Image _image3 = new System.Windows.Controls.Image();
         private System.Windows.Controls.Image _image4 = new System.Windows.Controls.Image();
         private Panorama _root;
         private string _currentImageUrl;
-        
-        public SwiperRenderer()
-        {
-           
-        }
-
+        private bool _isInitializingImages;
+        private string _lastImageUrl;
+ 
         protected override void OnElementChanged(ElementChangedEventArgs<Swiper> e)
         {
             base.OnElementChanged(e);
@@ -50,7 +46,55 @@ namespace Flipper.WinPhone.Renderers
             InitializeImages();
         }
 
-        private bool _isInitializingImages;
+        protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            base.OnElementPropertyChanged(sender, e);
+
+            if (e.PropertyName == Swiper.SourceProperty.PropertyName)
+            {
+                 InitializeImages();
+            }
+
+            if (e.PropertyName == Swiper.SelectedIndexProperty.PropertyName)
+            {
+                // TODO Check for index overrun
+                if (this.Element.SelectedIndex > 0 &&
+                    _currentImageUrl != this.Element.Source[this.Element.SelectedIndex])
+                {
+                    _currentImageUrl = this.Element.Source[this.Element.SelectedIndex];
+                    InitializeImages();
+                }
+            }
+
+            if (e.PropertyName == Swiper.SelectedUrlProperty.PropertyName)
+            {
+                if (!string.IsNullOrWhiteSpace(this.Element.SelectedUrl) &&
+                    _currentImageUrl != this.Element.SelectedUrl)
+                {
+                    _currentImageUrl = this.Element.SelectedUrl;
+                     InitializeImages();
+                }
+            }
+
+            if (e.PropertyName == "Renderer")
+            {
+                if (!String.IsNullOrWhiteSpace(this.Element.SelectedUrl))
+                {
+                    _currentImageUrl = this.Element.SelectedUrl;
+                }
+                else if (this.Element.SelectedIndex > 0)
+                {
+                    _currentImageUrl = this.Element.Source[this.Element.SelectedIndex];
+                }
+
+                InitializeImages();
+            }
+
+            if(string.IsNullOrWhiteSpace(_lastImageUrl))
+            {
+                _lastImageUrl = _currentImageUrl;
+            }
+        }
 
         private void InitializeImages()
         {
@@ -80,6 +124,7 @@ namespace Flipper.WinPhone.Renderers
                 if (_currentImageUrl == null)
                 {
                     _currentImageUrl = this.Element.Source.First();
+                    _lastImageUrl = _currentImageUrl;
                 }
 
                 // Set some properties on the control
@@ -125,18 +170,7 @@ namespace Flipper.WinPhone.Renderers
                     LoadImage(3, string.Empty);
                 }
 
-                //// Preload concept code
-                //for (int i = (index + 2); i < index + 6; i++)
-                //{
-                //    if (this.Element.Source.Count > i)
-                //    {
-                //        if (!IsInCache(this.Element.Source[0]))
-                //        {
-                //            // We don't want to await this
-                //            DownloadImageAsync(this.Element.Source[0]);
-                //        }
-                //    }
-                //}
+                // TODO This will be the place to preload images into some sort of cache
             }
             finally
             {
@@ -189,15 +223,28 @@ namespace Flipper.WinPhone.Renderers
                 image.Source = new BitmapImage(new Uri(url));
             }
 
+            // We use the tag to later identify what image we are showing.
             (image.Parent as PanoramaItem).Tag = url;
         }
 
+        /// <summary>
+        /// Calculates the actual image index based on the virtual index passed in
+        /// </summary>
+        /// <param name="virtualIndex">The virtual index</param>
+        /// <returns>The actual index</returns>
+        /// <remarks>
+        /// Since we have four rotating PanoramaItems, each containing an Image control, the index 
+        /// for the one showing differs from 0-3. The virtual index always represents the image with 1 in the middle
+        /// to easily reference it.
+        /// </remarks>
         private int CalculateIndex(int virtualIndex)
         {
             var selectedIndex = _root.SelectedIndex == -1 ? 0 : _root.SelectedIndex;
             var index = (virtualIndex - 1 + selectedIndex) % 4;
             if (index < 0)
+            {
                 index += 4;
+            }
 
             return index;
         }
@@ -205,12 +252,25 @@ namespace Flipper.WinPhone.Renderers
         void panorama_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var currentImageUrl = (_root.SelectedItem as PanoramaItem).Tag as string;
-            if (currentImageUrl == string.Empty)
+
+            if (string.IsNullOrWhiteSpace(currentImageUrl))
             {
-                return;
+                var indexOfLast = Element.Source.IndexOf(_lastImageUrl);
+                if (indexOfLast == 0)
+                {
+                    _currentImageUrl = Element.Source.First();
+                }
+                else
+                {
+                    _currentImageUrl = Element.Source.Last();
+                }
+            }
+            else
+            {
+                _currentImageUrl = currentImageUrl;
             }
 
-            _currentImageUrl = currentImageUrl;
+            _lastImageUrl = _currentImageUrl;
             InitializeImages();
         }
     }
