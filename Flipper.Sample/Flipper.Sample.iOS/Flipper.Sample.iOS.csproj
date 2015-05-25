@@ -111,15 +111,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Flipper\Flipper.csproj">
-      <Project>{39bd4fcf-0dce-4178-910e-3d411e906869}</Project>
-      <Name>Flipper</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\iOS\Flipper.iOS.csproj">
+    <ProjectReference Include="..\..\Flipper.iOS\Flipper.iOS.csproj">
       <Project>{85423851-e611-4d1e-84e6-80b70bc378d8}</Project>
       <Name>Flipper.iOS</Name>
       <IsAppExtension>false</IsAppExtension>
       <IsWatchApp>false</IsWatchApp>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Flipper\Flipper.csproj">
+      <Project>{39bd4fcf-0dce-4178-910e-3d411e906869}</Project>
+      <Name>Flipper</Name>
     </ProjectReference>
     <ProjectReference Include="..\Flipper.Sample\Flipper.Sample.csproj">
       <Name>Flipper.Sample</Name>

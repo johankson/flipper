@@ -34,3 +34,8 @@ Flipper.v12.suo
 /Flipper.WinPhone/Bin
 /Flipper/bin/Release
 /Flipper/obj/Release
+/Flipper.Droid/bin/Release
+/Flipper.Droid/obj/Release
+/Flipper.iOS/bin
+/Flipper.iOS/obj
+/Flipper.iOS/StyleCop.Cache
