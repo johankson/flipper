@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:flipper="clr-namespace:Flipper.Controls;assembly=Flipper"
+             x:Class="Flipper.Sample.Views.HoldButtonView">
+  <Grid RowSpacing="0">
+    <Grid.BackgroundColor>
+      <OnPlatform x:TypeArguments="Color" iOS="White" Android="#CCCCCC" WinPhone="White" />
+    </Grid.BackgroundColor>
+
+    <Grid.RowDefinitions>
+      <RowDefinition Height="80" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="50" />
+    </Grid.RowDefinitions>
+
+    <BoxView Color="Green" Grid.Row="0" />
+    <Label Grid.Row="0" Text="Hoooold it!" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" />
+
+    <ContentView Grid.Row="1">
+      <ContentView.Padding>
+        <OnPlatform x:TypeArguments="Thickness" Android="10" iOS="0" WinPhone="0" />
+      </ContentView.Padding>
+      <flipper:CardContentView CornderRadius="5" BackgroundColor="White">
+        <flipper:HoldButton Grid.Row="1"/>
+      </flipper:CardContentView>
+    </ContentView>
+    <BoxView Color="Green" Grid.Row="2" />
+
+    <!--<Label Grid.Row="2" Text="{Binding Status}" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />-->
+    <!--<Button Text="Random (index)" HorizontalOptions="End" VerticalOptions="Center" Command="{Binding GotoRandomIndex}" />-->
+    <!--<Button Text="Random (url)" HorizontalOptions="Start" VerticalOptions="Center" Command="{Binding GotoRandomUrl}" />-->
+  </Grid>
+</ContentPage>
