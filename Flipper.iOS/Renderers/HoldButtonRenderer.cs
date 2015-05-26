@@ -22,12 +22,11 @@ namespace Flipper.iOS.Renderers
             UserInteractionEnabled = true;
         }
 
-     //   private bool _isTouching;
-        private float _timeTouched;
         private float _touchProgress;
         private NSTimer _animationTimer;
         private float _timerResolution = 0.01f;
         private State _state = State.Inactive;
+        private float _progressLineThickness = 15f;
 
         private enum State
         {
@@ -52,7 +51,7 @@ namespace Flipper.iOS.Renderers
         private void TimerUpdate(NSTimer timer)
         {
 
-            if(_state == State.InProgress)
+            if (_state == State.InProgress)
             {
                 _touchProgress += _timerResolution / this.Element.Delay;
 
@@ -60,17 +59,17 @@ namespace Flipper.iOS.Renderers
                 {
                     _touchProgress = 1;
 
-                    if(_state == State.InProgress)
+                    if (_state == State.InProgress)
                     {
                         _state = State.Completed;
-                        if(this.Element.PressCompleted != null && this.Element.PressCompleted.CanExecute(null))
+                        if (this.Element.PressCompleted != null && this.Element.PressCompleted.CanExecute(null))
                         {
                             this.Element.PressCompleted.Execute(null);
                         }
                     }
                 }
             }
-            else
+            else if (_state == State.RollingBack) 
             {
                 _touchProgress -= _timerResolution / this.Element.Delay;
 
@@ -111,7 +110,7 @@ namespace Flipper.iOS.Renderers
             var endAngle = (float)(Math.PI * 2);
 
             var context = UIGraphics.GetCurrentContext();
-            context.SetFillColor(Color.Teal.ToCGColor());
+            context.SetFillColor(this.Element.Color.ToCGColor());
             context.AddArc(centerX, centerY, radius, startAngle, endAngle, true);
             context.DrawPath(CoreGraphics.CGPathDrawingMode.Fill);
 
@@ -119,14 +118,11 @@ namespace Flipper.iOS.Renderers
             {
                 var progress =  (float)(Math.PI * 2) * _touchProgress;
 
-                context.SetStrokeColor(Color.Red.ToCGColor());
+                context.SetStrokeColor(this.Element.ProgressColor.ToCGColor());
                 context.SetLineWidth(_progressLineThickness);
-                context.SetBlendMode(CoreGraphics.CGBlendMode.Luminosity);
                 context.AddArc(centerX, centerY, radius - _progressLineThickness / 2f, startAngle - (float)(Math.PI / 2), progress - (float)(Math.PI / 2), false);
                 context.DrawPath(CoreGraphics.CGPathDrawingMode.Stroke);
             }
         }
-
-        private float _progressLineThickness = 15f;
     }
 }
