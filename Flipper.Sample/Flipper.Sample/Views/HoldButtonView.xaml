@@ -8,24 +8,30 @@
       <OnPlatform x:TypeArguments="Color" iOS="White" Android="#CCCCCC" WinPhone="White" />
     </Grid.BackgroundColor>
 
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="20" />
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="20" />
+    </Grid.ColumnDefinitions>
+    
     <Grid.RowDefinitions>
       <RowDefinition Height="80" />
       <RowDefinition Height="*" />
       <RowDefinition Height="50" />
     </Grid.RowDefinitions>
 
-    <BoxView Color="Green" Grid.Row="0" />
-    <Label Grid.Row="0" Text="Hoooold it!" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" />
+    <BoxView Color="Green" Grid.Row="0" Grid.ColumnSpan="3" />
+    <Label Grid.Row="0" Grid.ColumnSpan="3" Text="Hoooold it!" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" />
 
-    <ContentView Grid.Row="1">
+    <ContentView Grid.Row="1" Grid.Column="1">
       <ContentView.Padding>
         <OnPlatform x:TypeArguments="Thickness" Android="10" iOS="0" WinPhone="0" />
       </ContentView.Padding>
       <flipper:CardContentView CornderRadius="5" BackgroundColor="White">
-        <flipper:HoldButton Grid.Row="1"/>
+        <flipper:HoldButton />
       </flipper:CardContentView>
     </ContentView>
-    <BoxView Color="Green" Grid.Row="2" />
+    <BoxView Color="Green" Grid.Row="2" Grid.ColumnSpan="3" />
 
     <!--<Label Grid.Row="2" Text="{Binding Status}" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />-->
     <!--<Button Text="Random (index)" HorizontalOptions="End" VerticalOptions="Center" Command="{Binding GotoRandomIndex}" />-->
