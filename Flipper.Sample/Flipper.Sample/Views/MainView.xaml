@@ -5,6 +5,7 @@
 
   <StackLayout>
     <Button Text="Swiper" Command="{Binding NavigateToSwiper}" />
+    <Button Text="HoldButton" Command="{Binding NavigateToHoldButton}" />
   </StackLayout>
   
 </ContentPage>

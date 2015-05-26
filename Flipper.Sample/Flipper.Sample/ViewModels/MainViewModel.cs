@@ -28,5 +28,16 @@ namespace Flipper.Sample.ViewModels
                     });
             }
         }
+
+        public ICommand NavigateToHoldButton
+        {
+            get
+            {
+                return new Command(async () =>
+                    {
+                        await _navigation.PushAsync(new HoldButtonView());
+                    });
+            }
+        }
     }
 }
