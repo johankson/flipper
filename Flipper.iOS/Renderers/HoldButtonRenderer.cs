@@ -42,6 +42,11 @@ namespace Flipper.iOS.Renderers
 
             _state = State.InProgress;
 
+            if(_touchProgress > 0 && this.Element.PressResumed != null && this.Element.PressResumed.CanExecute(null))
+            {
+                this.Element.PressResumed.Execute(null);
+            }
+
             if (_animationTimer == null)
             {
                 _animationTimer = NSTimer.CreateRepeatingScheduledTimer(_timerResolution, TimerUpdate);
@@ -92,13 +97,23 @@ namespace Flipper.iOS.Renderers
         public override void TouchesEnded(NSSet touches, UIEvent evt)
         {
             base.TouchesEnded(touches, evt);
-            _state = State.RollingBack;
+            Rollback();
         }
 
         public override void TouchesCancelled(NSSet touches, UIEvent evt)
         {
             base.TouchesCancelled(touches, evt);
+            Rollback();
+        }
+
+        private void Rollback()
+        {
             _state = State.RollingBack;
+
+            if (_touchProgress > 0 && this.Element.PressCanceled != null && this.Element.PressCanceled.CanExecute(null))
+            {
+                this.Element.PressCanceled.Execute(null);
+            }
         }
 
         public override void Draw(CoreGraphics.CGRect rect)
