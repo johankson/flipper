@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using ModernHttpClient;
 using Android.Util;
+using System.Net;
 
 namespace Flipper.Droid
 {
@@ -41,6 +42,9 @@ namespace Flipper.Droid
 
         public async Task Load()
         {
+            await LoadWithProgress();
+            return;
+
             using (var client = new HttpClient(new NativeMessageHandler()))
             {
                 try
@@ -49,7 +53,7 @@ namespace Flipper.Droid
                     var stream = await client.GetStreamAsync(new Uri(_url));
                     _bitmap = await BitmapFactory.DecodeStreamAsync(stream);
                     Log.Debug("SwipeRenderer", "Done loading image '{0}'", _url);
-
+                    
                     if (Completed != null && _bitmap != null)
                     {
                         Completed(this);
@@ -57,11 +61,49 @@ namespace Flipper.Droid
                 }
                 catch (Exception ex)
                 {
-                    // TODO Log
                     Log.Debug("SwipeRenderer", "Exception loading image '{0}'", _url);
                 }
             }
         }
+
+        private async Task LoadWithProgress()
+        {
+            try
+            {
+                var webClient = new WebClient();
+
+                string proxyHost = Java.Lang.JavaSystem.GetProperty("http.proxyHost");
+                string proxyPort = Java.Lang.JavaSystem.GetProperty("http.proxyPort"); 
+
+                if (string.IsNullOrEmpty(proxyHost) == false && string.IsNullOrEmpty(proxyPort) == false)
+                {
+                    Log.Debug("SwipeRenderer", "proxy host:" + proxyHost + ":" + proxyPort);
+                    WebProxy proxy = new WebProxy(proxyHost, int.Parse(proxyPort));
+                    webClient.Proxy = proxy;
+                }
+
+                webClient.DownloadProgressChanged += webClient_DownloadProgressChanged;
+
+                var bytes = await webClient.DownloadDataTaskAsync(new Uri(_url));
+                _bitmap = await BitmapFactory.DecodeByteArrayAsync(bytes, 0, bytes.Length);
+
+                if (Completed != null && _bitmap != null)
+                {
+                    Completed(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Debug("SwipeRenderer", "Exception loading image '{0}' using WebClient", _url);
+            }
+        }
+
+        void webClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            int i = 42;
+        }
+
+       
 
     }
 }

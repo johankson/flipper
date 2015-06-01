@@ -14,6 +14,7 @@ using Foundation;
 using System.Threading.Tasks;
 using System.Net.Http;
 using ModernHttpClient;
+using System.Threading;
 
 [assembly: ExportRenderer(typeof(Swiper), typeof(SwiperRenderer))]
 
@@ -34,7 +35,6 @@ namespace Flipper.iOS
         private nfloat _height = 320f;
         private nfloat _halfWidth;
         private nfloat _halfHeight;
-        private bool _isInitializingImages = false;
 
         // Primitive cache - no life time management or cleanup - also stores the image in full size.
         // Thinking about abstracting the cache away and inject it instead to make sure it can be
@@ -164,20 +164,21 @@ namespace Flipper.iOS
             }
         }
 
+
         /// <summary>
         /// Sets the ImageViews to the correct images based on
         /// the current selected image.
         /// </summary>
         private async Task InitializeImagesAsync()
         {
-            if (_isInitializingImages)
-            {
-                return;
-            }
+            //if (_isInitializingImages && !force)
+            //{
+            //   return;
+            //}
 
             try
             {
-                _isInitializingImages = true;
+                //_isInitializingImages = true;
 
                 if (this.Element.Source == null)
                 {
@@ -242,14 +243,13 @@ namespace Flipper.iOS
                         if (!IsInCache(this.Element.Source[0]))
                         {
                             // We don't want to await this
-                            DownloadImageAsync(this.Element.Source[0]);
+                            await DownloadImageAsync(this.Element.Source[0]).ConfigureAwait(false);
                         }
                     }
                 }
             }
             finally
             {
-                _isInitializingImages = false;
             }
         }
 
