@@ -19,21 +19,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flipper.WinPhone", "Flipper
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flipper.Droid", "Flipper.Droid\Flipper.Droid.csproj", "{21CBEA92-614E-401F-8FB8-18ADF19920DB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{10D13C17-7A2C-4BEB-BA65-D74B73BCCD0E}"
-	ProjectSection(SolutionItems) = preProject
-		nuget\Flipper.Forms.1.0.0-pre1.nupkg = nuget\Flipper.Forms.1.0.0-pre1.nupkg
-		nuget\Flipper.Forms.1.0.0-pre2.nupkg = nuget\Flipper.Forms.1.0.0-pre2.nupkg
-		nuget\Flipper.Forms.1.0.0-pre3.nupkg = nuget\Flipper.Forms.1.0.0-pre3.nupkg
-		nuget\Flipper.Forms.1.0.0-pre4.nupkg = nuget\Flipper.Forms.1.0.0-pre4.nupkg
-		nuget\Flipper.Forms.1.0.0-pre5.nupkg = nuget\Flipper.Forms.1.0.0-pre5.nupkg
-		nuget\Flipper.Forms.1.0.0-pre6.nupkg = nuget\Flipper.Forms.1.0.0-pre6.nupkg
-		nuget\Flipper.Forms.1.0.0-pre7.nupkg = nuget\Flipper.Forms.1.0.0-pre7.nupkg
-		nuget\Flipper.Forms.1.0.0-pre8.nupkg = nuget\Flipper.Forms.1.0.0-pre8.nupkg
-		nuget\Flipper.Forms.1.0.0-pre9.nupkg = nuget\Flipper.Forms.1.0.0-pre9.nupkg
-		nuget\Flipper.Forms.1.0.0.nupkg = nuget\Flipper.Forms.1.0.0.nupkg
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flipper.iOS", "Flipper.iOS\Flipper.iOS.csproj", "{85423851-E611-4D1E-84E6-80B70BC378D8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{25A204D7-BBC8-438A-9BD0-BF1660B28DB4}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\Flipper.Forms.1.0.0-pre1.nupkg = .nuget\Flipper.Forms.1.0.0-pre1.nupkg
+		.nuget\Flipper.Forms.1.0.0-pre2.nupkg = .nuget\Flipper.Forms.1.0.0-pre2.nupkg
+		.nuget\Flipper.Forms.1.0.0-pre3.nupkg = .nuget\Flipper.Forms.1.0.0-pre3.nupkg
+		.nuget\Flipper.Forms.1.0.0-pre4.nupkg = .nuget\Flipper.Forms.1.0.0-pre4.nupkg
+		.nuget\Flipper.Forms.1.0.0-pre5.nupkg = .nuget\Flipper.Forms.1.0.0-pre5.nupkg
+		.nuget\Flipper.Forms.1.0.0-pre6.nupkg = .nuget\Flipper.Forms.1.0.0-pre6.nupkg
+		.nuget\Flipper.Forms.1.0.0-pre7.nupkg = .nuget\Flipper.Forms.1.0.0-pre7.nupkg
+		.nuget\Flipper.Forms.1.0.0-pre8.nupkg = .nuget\Flipper.Forms.1.0.0-pre8.nupkg
+		.nuget\Flipper.Forms.1.0.0-pre9.nupkg = .nuget\Flipper.Forms.1.0.0-pre9.nupkg
+		.nuget\Flipper.Forms.1.0.0.nupkg = .nuget\Flipper.Forms.1.0.0.nupkg
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

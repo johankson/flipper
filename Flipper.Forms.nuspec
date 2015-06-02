@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>Flipper.Forms</id>
+        <version>1.0.1</version>
+        <title>Flipper Forms Controls</title>
+        <authors>Johan Karlsson</authors>
+        <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+        <projectUrl>https://github.com/Ankmannen/flipper</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>A simple package of fine controls.</description>
+        <summary>MIT license</summary>
+        <releaseNotes>Containing two controls. First one being an image carousel that performs well for a lot of images (iOS, Android and WP) and a CardView control for Android. Checkout the github-wiki at the project URL for documentation.</releaseNotes>
+        <dependencies>
+            <dependency id="Xamarin.Forms" version="1.4.2.6359" />
+            <dependency id="modernhttpclient" version="2.4.1" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="content\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\LinkerBeGone.cs.pp" 
+            target="content\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10" />
+        <file src="content\Xamarin.iOS10\LinkerBeGone.cs.pp" target="content\Xamarin.iOS10" /> 
+        <file src="Flipper.Droid\bin\Release\Flipper.dll" target="lib\MonoAndroid10\Flipper.dll" />
+        <file src="Flipper.Droid\bin\Release\Flipper.Droid.dll" target="lib\MonoAndroid10\Flipper.Droid.dll" />
+        <file src="Flipper\bin\Release\Flipper.dll" target="lib\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Flipper.dll" />
+        <file src="Flipper.WinPhone\Bin\Release\Flipper.dll" target="lib\wp8\Flipper.dll" />
+        <file src="Flipper.WinPhone\Bin\Release\Flipper.WinPhone.dll" target="lib\wp8\Flipper.WinPhone.dll" />
+        <file src="Flipper.iOS\bin\iPhone\Release\Flipper.dll" target="lib\Xamarin.iOS10\Flipper.dll" />
+        <file src="Flipper.iOS\bin\iPhone\Release\FlipperiOS.dll" target="lib\Xamarin.iOS10\FlipperiOS.dll" /> 
+    
+    </files>
+</package>
