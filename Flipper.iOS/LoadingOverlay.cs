@@ -50,7 +50,6 @@ namespace Flipper.iOS
                 ));
             loadingLabel.BackgroundColor = UIColor.Clear;
             loadingLabel.TextColor = UIColor.White;
-            loadingLabel.Text = "Loading image...";
             loadingLabel.TextAlignment = UITextAlignment.Center;
             loadingLabel.AutoresizingMask = UIViewAutoresizing.FlexibleMargins;
             AddSubview(loadingLabel);
@@ -72,6 +71,26 @@ namespace Flipper.iOS
                 () => { Alpha = 0; },
                 () => { RemoveFromSuperview(); }
             );
+        }
+
+        public string ImageLoadingText
+        {
+            get
+            {
+                if(loadingLabel != null)
+                {
+                    return loadingLabel.Text;
+                }
+
+                return string.Empty;
+            }
+            set
+            {
+                if (loadingLabel != null)
+                {
+                    loadingLabel.Text = value;
+                }
+            }
         }
     };
 }

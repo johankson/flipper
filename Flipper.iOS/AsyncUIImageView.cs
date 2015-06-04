@@ -23,7 +23,10 @@ namespace Flipper.iOS
 
             if (loadingOverlay == null)
             {
-                this.loadingOverlay = new LoadingOverlay(this.Frame);
+                this.loadingOverlay = new LoadingOverlay(this.Frame)
+                {
+                    ImageLoadingText = ImageLoadingText
+                };
                 this.AddSubview(loadingOverlay);
             }
         }
@@ -37,6 +40,12 @@ namespace Flipper.iOS
 
             this.loadingOverlay.Hide();
             this.loadingOverlay = null;
+        }
+
+        public string ImageLoadingText
+        {
+            get;
+            set;
         }
     }
 }

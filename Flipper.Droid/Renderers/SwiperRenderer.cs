@@ -152,7 +152,7 @@ namespace Flipper.Droid.Renderers
             this.Element.SelectedIndex = index;
             this.Element.SelectedUrl = _currentImageUrl;
 
-            if (index > (this.Element.Source.Count - 1) - this.Element.NearEndTreshold && this.Element.IsNearEnd != null)
+            if (index > (this.Element.Source.Count - 1) - this.Element.NearEndThreshold && this.Element.IsNearEnd != null)
             {
                 if (this.Element.IsNearEnd.CanExecute(null))
                 {
@@ -255,9 +255,9 @@ namespace Flipper.Droid.Renderers
             paint.Color = Xamarin.Forms.Color.Black.ToAndroid();
             paint.SetStyle(Paint.Style.Fill);
             paint.TextSize = 100;
-            var textWidth = paint.MeasureText("Loading...");
+            var textWidth = paint.MeasureText(Element.ImageLoadingText);
 
-            canvas.DrawText("Loading...", this._halfWidth - (textWidth / 2) + _swipeCurrectXOffset + offset, this._halfHeight, paint);
+            canvas.DrawText(Element.ImageLoadingText, this._halfWidth - (textWidth / 2) + _swipeCurrectXOffset + offset, this._halfHeight, paint);
         }
 
         /// <summary>

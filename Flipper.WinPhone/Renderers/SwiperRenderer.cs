@@ -132,7 +132,7 @@ namespace Flipper.WinPhone.Renderers
                 this.Element.SelectedIndex = index;
                 this.Element.SelectedUrl = _currentImageUrl;
 
-                if (index > (this.Element.Source.Count - 1) - this.Element.NearEndTreshold && this.Element.IsNearEnd != null)
+                if (index > (this.Element.Source.Count - 1) - this.Element.NearEndThreshold && this.Element.IsNearEnd != null)
                 {
                     if (this.Element.IsNearEnd.CanExecute(null))
                     {

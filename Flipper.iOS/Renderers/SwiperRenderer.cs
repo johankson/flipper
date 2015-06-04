@@ -52,6 +52,7 @@ namespace Flipper.iOS
             return new AsyncUIImageView()
             {
                 ContentMode = UIViewContentMode.ScaleAspectFit,
+                ImageLoadingText = Element.ImageLoadingText
             };
         }
 
@@ -149,6 +150,13 @@ namespace Flipper.iOS
                 }
             }
 
+            if(e.PropertyName == Swiper.ImageLoadingTextProperty.PropertyName)
+            {
+                _centerImageView.ImageLoadingText = Element.ImageLoadingText;
+                _leftImageView.ImageLoadingText = Element.ImageLoadingText;
+                _rightImageView.ImageLoadingText = Element.ImageLoadingText;
+            }
+
             if (e.PropertyName == "Renderer")
             {
                 if (!String.IsNullOrWhiteSpace(this.Element.SelectedUrl))
@@ -159,6 +167,10 @@ namespace Flipper.iOS
                 {
                     _currentImageUrl = this.Element.Source[this.Element.SelectedIndex];
                 }
+
+                _centerImageView.ImageLoadingText = this.Element.ImageLoadingText;
+                _leftImageView.ImageLoadingText = this.Element.ImageLoadingText;
+                _rightImageView.ImageLoadingText = this.Element.ImageLoadingText;
 
                 await InitializeImagesAsync();
             }
@@ -204,7 +216,7 @@ namespace Flipper.iOS
                 this.Element.SelectedIndex = index;
                 this.Element.SelectedUrl = _currentImageUrl;
 
-                if (index > (this.Element.Source.Count - 1) - this.Element.NearEndTreshold && this.Element.IsNearEnd != null)
+                if (index > (this.Element.Source.Count - 1) - this.Element.NearEndThreshold && this.Element.IsNearEnd != null)
                 {
                     if (this.Element.IsNearEnd.CanExecute(null))
                     {
