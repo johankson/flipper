@@ -2,15 +2,17 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>Flipper.Forms</id>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
         <title>Flipper Forms Controls</title>
         <authors>Johan Karlsson</authors>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <projectUrl>https://github.com/Ankmannen/flipper</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>A simple package of fine controls.</description>
+        <description>A simple package of fine controls. Containing two controls. First one being an image carousel that performs well for a lot of images (iOS, Android and WP) and a CardView control for Android.</description>
         <summary>MIT license</summary>
-        <releaseNotes>Containing two controls. First one being an image carousel that performs well for a lot of images (iOS, Android and WP) and a CardView control for Android. Checkout the github-wiki at the project URL for documentation.</releaseNotes>
+        <releaseNotes>Checkout the github-wiki at the project URL for documentation.
+            Version 1.0.2 - The loading text can now be set
+        </releaseNotes>
         <dependencies>
             <dependency id="Xamarin.Forms" version="1.4.2.6359" />
             <dependency id="modernhttpclient" version="2.4.1" />

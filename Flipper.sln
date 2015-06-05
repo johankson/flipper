@@ -23,16 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flipper.iOS", "Flipper.iOS\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{25A204D7-BBC8-438A-9BD0-BF1660B28DB4}"
 	ProjectSection(SolutionItems) = preProject
-		.nuget\Flipper.Forms.1.0.0-pre1.nupkg = .nuget\Flipper.Forms.1.0.0-pre1.nupkg
-		.nuget\Flipper.Forms.1.0.0-pre2.nupkg = .nuget\Flipper.Forms.1.0.0-pre2.nupkg
-		.nuget\Flipper.Forms.1.0.0-pre3.nupkg = .nuget\Flipper.Forms.1.0.0-pre3.nupkg
-		.nuget\Flipper.Forms.1.0.0-pre4.nupkg = .nuget\Flipper.Forms.1.0.0-pre4.nupkg
-		.nuget\Flipper.Forms.1.0.0-pre5.nupkg = .nuget\Flipper.Forms.1.0.0-pre5.nupkg
-		.nuget\Flipper.Forms.1.0.0-pre6.nupkg = .nuget\Flipper.Forms.1.0.0-pre6.nupkg
-		.nuget\Flipper.Forms.1.0.0-pre7.nupkg = .nuget\Flipper.Forms.1.0.0-pre7.nupkg
-		.nuget\Flipper.Forms.1.0.0-pre8.nupkg = .nuget\Flipper.Forms.1.0.0-pre8.nupkg
-		.nuget\Flipper.Forms.1.0.0-pre9.nupkg = .nuget\Flipper.Forms.1.0.0-pre9.nupkg
-		.nuget\Flipper.Forms.1.0.0.nupkg = .nuget\Flipper.Forms.1.0.0.nupkg
+		CreateNugetPackage.ps1 = CreateNugetPackage.ps1
+		Flipper.Forms.nuspec = Flipper.Forms.nuspec
 	EndProjectSection
 EndProject
 Global

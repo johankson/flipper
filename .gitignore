@@ -39,3 +39,4 @@ Flipper.v12.suo
 /Flipper.iOS/bin
 /Flipper.iOS/obj
 /Flipper.iOS/StyleCop.Cache
+*.nupkg
