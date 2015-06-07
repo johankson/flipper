@@ -40,33 +40,7 @@ namespace Flipper.Droid
 
         public Action<AsyncImageLoader> Completed { get; set; }
 
-        public async Task Load()
-        {
-            await LoadWithProgress();
-            return;
-
-            using (var client = new HttpClient(new NativeMessageHandler()))
-            {
-                try
-                {
-                    Log.Debug("SwipeRenderer", "Begin loading image '{0}'", _url);
-                    var stream = await client.GetStreamAsync(new Uri(_url));
-                    _bitmap = await BitmapFactory.DecodeStreamAsync(stream);
-                    Log.Debug("SwipeRenderer", "Done loading image '{0}'", _url);
-                    
-                    if (Completed != null && _bitmap != null)
-                    {
-                        Completed(this);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log.Debug("SwipeRenderer", "Exception loading image '{0}'", _url);
-                }
-            }
-        }
-
-        private async Task LoadWithProgress()
+        private async Task Load()
         {
             try
             {
@@ -77,7 +51,7 @@ namespace Flipper.Droid
 
                 if (string.IsNullOrEmpty(proxyHost) == false && string.IsNullOrEmpty(proxyPort) == false)
                 {
-                    Log.Debug("SwipeRenderer", "proxy host:" + proxyHost + ":" + proxyPort);
+                    Log.Debug("SwiperRenderer", "proxy host:" + proxyHost + ":" + proxyPort);
                     WebProxy proxy = new WebProxy(proxyHost, int.Parse(proxyPort));
                     webClient.Proxy = proxy;
                 }
@@ -94,16 +68,14 @@ namespace Flipper.Droid
             }
             catch (Exception ex)
             {
-                Log.Debug("SwipeRenderer", "Exception loading image '{0}' using WebClient", _url);
+                Log.Debug("SwiperRenderer", "Exception loading image '{0}' using WebClient", _url);
             }
         }
 
         void webClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            int i = 42;
+            // TODO Visualize this
+            Log.Debug("SwiperRenderer", "DownloadProgress changed for '{0}' to {1}%", _url, e.ProgressPercentage);
         }
-
-       
-
     }
 }

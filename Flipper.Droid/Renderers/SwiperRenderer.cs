@@ -254,7 +254,7 @@ namespace Flipper.Droid.Renderers
             Paint paint = new Paint();
             paint.Color = Xamarin.Forms.Color.Black.ToAndroid();
             paint.SetStyle(Paint.Style.Fill);
-            paint.TextSize = 100;
+            paint.TextSize = 50;
             var textWidth = paint.MeasureText(Element.ImageLoadingText);
 
             canvas.DrawText(Element.ImageLoadingText, this._halfWidth - (textWidth / 2) + _swipeCurrectXOffset + offset, this._halfHeight, paint);
