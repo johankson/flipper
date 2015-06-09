@@ -40,3 +40,14 @@ Flipper.v12.suo
 /Flipper.iOS/obj
 /Flipper.iOS/StyleCop.Cache
 *.nupkg
+/Flipper.Sample.WinRT/Flipper.Sample.WinRT.Windows/bin/Debug
+/Flipper.Sample.WinRT/Flipper.Sample.WinRT.Windows/obj/Debug
+/Flipper.Sample.WinRT/Flipper.Sample.WinRT.WindowsPhone/bin/Debug
+/Flipper.Sample.WinRT/Flipper.Sample.WinRT.WindowsPhone/obj/Debug
+/Flipper.WinRT/Flipper.WinRT.Windows/bin/Debug
+/Flipper.WinRT/Flipper.WinRT.Windows/obj/Debug
+/Flipper.WinRT/Flipper.WinRT.WindowsPhone/obj/Debug
+/Flipper.WinRT.Windows/bin/Debug
+/Flipper.WinRT.Windows/obj/Debug
+/Flipper.WinRT.WindowsPhone/bin/Debug
+/Flipper.WinRT.WindowsPhone/obj/Debug
