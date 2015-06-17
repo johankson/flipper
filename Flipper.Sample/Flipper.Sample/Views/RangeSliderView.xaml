@@ -8,6 +8,6 @@
     <Label Text="{Binding LeftValue}" />
     <Label Text="Right value" />
     <Label Text="{Binding RightValue}" />
-    <flipper:RangeSlider MaxValue="1000" MinValue="0" Step="100" LeftValue="{Binding LeftValue}" RightValue="{Binding RightValue}" />
+    <flipper:RangeSlider MaxValue="1000" MinValue="0" Step="100" IndicatorColor="Red" LeftValue="{Binding LeftValue}" RightValue="{Binding RightValue}" />
   </StackLayout>
 </ContentPage>
