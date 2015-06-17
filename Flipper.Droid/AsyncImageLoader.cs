@@ -45,17 +45,6 @@ namespace Flipper.Droid
             try
             {
                 var webClient = new WebClient();
-
-                string proxyHost = Java.Lang.JavaSystem.GetProperty("http.proxyHost");
-                string proxyPort = Java.Lang.JavaSystem.GetProperty("http.proxyPort"); 
-
-                if (string.IsNullOrEmpty(proxyHost) == false && string.IsNullOrEmpty(proxyPort) == false)
-                {
-                    Log.Debug("SwiperRenderer", "proxy host:" + proxyHost + ":" + proxyPort);
-                    WebProxy proxy = new WebProxy(proxyHost, int.Parse(proxyPort));
-                    webClient.Proxy = proxy;
-                }
-
                 webClient.DownloadProgressChanged += webClient_DownloadProgressChanged;
 
                 var bytes = await webClient.DownloadDataTaskAsync(new Uri(_url));
@@ -68,7 +57,7 @@ namespace Flipper.Droid
             }
             catch (Exception ex)
             {
-                Log.Debug("SwiperRenderer", "Exception loading image '{0}' using WebClient", _url);
+                Log.Debug("SwiperRenderer", "Exception loading image '{0}' using WebClient '{1}'", _url, ex.ToString());
             }
         }
 
