@@ -5,6 +5,7 @@
 
   <StackLayout>
     <Button Text="Swiper" Command="{Binding NavigateToSwiper}" />
+    <Button Text="RangeSlider" Command="{Binding NavigateToRangeSlider}" />
   </StackLayout>
   
 </ContentPage>

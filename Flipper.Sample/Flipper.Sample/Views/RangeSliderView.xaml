@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:flipper="clr-namespace:Flipper.Controls;assembly=Flipper"
+             x:Class="Flipper.Sample.Views.RangeSliderView">
+  <StackLayout Padding="20">
+    <Label Text="Left value" />
+    <Label Text="{Binding LeftValue}" />
+    <Label Text="Right value" />
+    <Label Text="{Binding RightValue}" />
+    <flipper:RangeSlider MaxValue="1000" MinValue="0" Step="100" LeftValue="{Binding LeftValue}" RightValue="{Binding RightValue}" />
+  </StackLayout>
+</ContentPage>

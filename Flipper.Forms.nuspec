@@ -6,12 +6,14 @@
         <title>Flipper Forms Controls</title>
         <authors>Johan Karlsson</authors>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
-        <projectUrl>https://github.com/Ankmannen/flipper</projectUrl>
+        <projectUrl>https://github.com/johankson/flipper</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>A simple package of fine controls. Containing two controls. First one being an image carousel that performs well for a lot of images (iOS, Android and WP) and a CardView control for Android.</description>
+        <description>A simple package of fine controls. Containing three controls. First one being an image carousel that performs well for a lot of images (iOS, Android and WP), a CardView control for Android and a RangeSlider for iOS and Windows Phone.</description>
         <summary>MIT license</summary>
-        <releaseNotes>Checkout the github-wiki at the project URL for documentation.
-            Version 1.0.2 - The loading text can now be set
+        <releaseNotes>
+          Checkout the github-wiki at the project URL for documentation.
+          Version 1.0.3 Pre 1 - RangeSlider for iOS and Windows Phone
+          Version 1.0.2 - The loading text can now be set
         </releaseNotes>
         <dependencies>
             <dependency id="Xamarin.Forms" version="1.4.2.6359" />
