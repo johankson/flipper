@@ -51,3 +51,12 @@ Flipper.v12.suo
 /Flipper.WinRT.Windows/obj/Debug
 /Flipper.WinRT.WindowsPhone/bin/Debug
 /Flipper.WinRT.WindowsPhone/obj/Debug
+/Flipper.Sample.WinRT/Flipper.Sample.WinRT.Windows/bin/Release
+/Flipper.Sample.WinRT/Flipper.Sample.WinRT.Windows/obj
+/Flipper.Sample.WinRT/Flipper.Sample.WinRT.WindowsPhone/bin/Release
+/Flipper.Sample.WinRT/Flipper.Sample.WinRT.WindowsPhone/obj
+/Flipper.WinRT.Windows/bin/Release
+/Flipper.WinRT.Windows/obj
+/Flipper.WinRT.WindowsPhone/bin/Release
+/Flipper.WinRT.WindowsPhone/obj/Release
+/Flipper.WinRT.WindowsPhone/obj/x86/Debug
