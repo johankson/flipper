@@ -2,9 +2,9 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>Flipper.Forms</id>
-        <version>1.0.3-Pre1</version>
+        <version>1.0.3-Pre2</version>
         <title>Flipper Forms Controls</title>
-        <authors>Johan Karlsson</authors>
+        <authors>Johan Karlsson, Daniel Hindrikes</authors>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <projectUrl>https://github.com/johankson/flipper</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -12,6 +12,7 @@
         <summary>MIT license</summary>
         <releaseNotes>
           Checkout the github-wiki at the project URL for documentation.
+          Version 1.0.3-Pre 2 - SwiperView for Android is now working inside a ScrollView.
           Version 1.0.3-Pre 1 - RangeSlider for iOS and Windows Phone
           Version 1.0.2 - The loading text can now be set
         </releaseNotes>
