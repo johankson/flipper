@@ -352,6 +352,7 @@ namespace Flipper.Droid.Renderers
                     return true;
 
                 case MotionEventActions.Up:
+                case MotionEventActions.Cancel:
                   //  _swipeCurrectXOffset = 0f;
 
                     var index = this.Element.Source.IndexOf(_currentImageUrl);
