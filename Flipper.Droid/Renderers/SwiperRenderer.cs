@@ -349,7 +349,7 @@ namespace Flipper.Droid.Renderers
             {
                 case MotionEventActions.Down:
                     _swipeStartX = e.GetX();
-                    return true;
+                    return false;
 
                 case MotionEventActions.Up:
                 case MotionEventActions.Cancel:
