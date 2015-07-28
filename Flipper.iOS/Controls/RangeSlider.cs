@@ -16,8 +16,72 @@ namespace Flipper.iOS.Controls
         private UIPanGestureRecognizer _leftIndicatorGesture, _rightIndicatorGesture;
 
         public event EventHandler ValueChanging, ValueChanged;
-        public double LeftValue { get; set; }
-        public double RightValue { get; set; }
+        private bool _isInitialized;
+
+        private double _leftValue;
+        public double LeftValue
+        {
+            get
+            {
+                return _leftValue;
+            }
+            set
+            {
+                if (!_isInitialized)
+                {
+
+                    UpdateValue(_leftIndicator, _leftTouchArea, value); 
+                }
+
+                _leftValue = value;
+                
+            }
+        }
+
+        private double _rightValue { get; set; }
+        public double RightValue
+        {
+            get
+            {
+                return _rightValue;
+            }
+            set
+            {
+                if (!_isInitialized)
+                {
+                    if(MaxValue < value)
+                    {
+                        MaxValue = value;
+                    }
+
+                    UpdateValue(_rightIndicator, _rightTouchArena, value); 
+                }
+
+                _rightValue = value;
+                
+            }
+        }
+
+        private void UpdateValue(UIView indicator, UIView touchArea, double value)
+        {
+            var percent = value / (MaxValue - MinValue);
+
+            var position = (double)(_background.Frame.Width * percent);
+
+            if (!double.IsNaN(position))
+            {
+                indicator.Center = new CGPoint(position, indicator.Center.Y);
+                touchArea.Center = new CGPoint(position, indicator.Center.Y);
+
+                var width = _rightIndicator.Center.X - _leftIndicator.Center.X;
+                _range.Frame = new CoreGraphics.CGRect(_leftIndicator.Center.X, _range.Frame.Y, width, _range.Frame.Height);
+
+                if (ValueChanged != null)
+                {
+                    ValueChanged(this, new EventArgs()); 
+                }
+            }
+        }
 
         private double _minValue;
         public double MinValue
@@ -29,7 +93,7 @@ namespace Flipper.iOS.Controls
             set
             {
                 _minValue = value;
-                LeftValue = value;
+                
             }
         }
 
@@ -43,7 +107,8 @@ namespace Flipper.iOS.Controls
             set
             {
                 _maxValue = value;
-                RightValue = value;
+
+                UpdateValue(_rightIndicator, _rightTouchArena, RightValue);
             }
         }
 
@@ -135,6 +200,9 @@ namespace Flipper.iOS.Controls
                 _leftTouchArea.Frame = new RectangleF(0, 0, 40, 40);
                 _rightTouchArena.Frame = new RectangleF((float)Frame.Width - 60, 0, 40, 40);
 
+                UpdateValue(_leftIndicator, _leftTouchArea, LeftValue);
+                UpdateValue(_rightIndicator, _rightTouchArena, RightValue);
+
                 _layouted = true;
             }
 
@@ -142,13 +210,13 @@ namespace Flipper.iOS.Controls
 
 
         private float _startX;
-        private int _lastStep;
+        private float _lastStep;
         private void OnPan(UIPanGestureRecognizer recognizer)
         {
-
-
             if (recognizer.State == UIGestureRecognizerState.Began || recognizer.State == UIGestureRecognizerState.Changed)
             {
+                _isInitialized = true;
+
                 var stepLength = _background.Frame.Width / ((MaxValue - MinValue) / Step);
 
                 var touchPoint = recognizer.LocationInView(this);
@@ -156,6 +224,7 @@ namespace Flipper.iOS.Controls
                 UIView indicator = null;
                 UIView touchArea = null;
 
+                //Is this a slide to left or right?
                 if (recognizer == _leftIndicatorGesture)
                 {
                     indicator = _leftIndicator;
@@ -173,11 +242,11 @@ namespace Flipper.iOS.Controls
                 }
 
 
-                var cumulativManipulation = touchPoint.X - _startX;
+                var cumulativeManipulation = touchPoint.X - _startX;
                 var deltaManipulation = touchPoint.X - indicator.Center.X;
 
-                if (deltaManipulation > 0 && cumulativManipulation / stepLength > _lastStep ||
-                    deltaManipulation < 0 && cumulativManipulation / stepLength < _lastStep)
+                if (deltaManipulation > 0 && cumulativeManipulation / stepLength > _lastStep ||
+                    deltaManipulation < 0 && cumulativeManipulation / stepLength < _lastStep)
                 {
                     if (deltaManipulation > 0)
                     {
