@@ -24,9 +24,10 @@ namespace Flipper.iOS.Renderers
             {
                 var slider = new Controls.RangeSlider();
                 slider.Frame = new CGRect((float)Frame.X, (float)Frame.Y, (float)Frame.Width, 200);
+                
 
                 slider.ValueChanging += slider_ValueChanging;
-                slider.ValueChanged += slider_ValueChanged;              
+                slider.ValueChanged += slider_ValueChanged;
 
                 SetNativeControl(slider); 
             }
@@ -57,6 +58,8 @@ namespace Flipper.iOS.Renderers
             {
                 Control.MaxValue = Element.MaxValue;
                 Control.MinValue = Element.MinValue;
+                Control.LeftValue = Element.LeftValue;
+                Control.RightValue = Element.RightValue;
                 Control.Step = Element.Step;
 
                 Control.BackgroundColor = Element.BackgroundColor.ToUIColor();
@@ -70,6 +73,14 @@ namespace Flipper.iOS.Renderers
             else if (e.PropertyName == RangeSlider.MinValueProperty.PropertyName)
             {
                 Control.MinValue = Element.MinValue;
+            }
+            else if (e.PropertyName == RangeSlider.LeftValueProperty.PropertyName)
+            {
+                Control.LeftValue = Element.LeftValue;
+            }
+            else if (e.PropertyName == RangeSlider.RightValueProperty.PropertyName)
+            {
+                Control.LeftValue = Element.RightValue;
             }
             else if (e.PropertyName == RangeSlider.StepProperty.PropertyName)
             {

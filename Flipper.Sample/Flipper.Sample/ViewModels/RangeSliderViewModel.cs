@@ -9,6 +9,12 @@ namespace Flipper.Sample.ViewModels
 {
     public class RangeSliderViewModel : INotifyPropertyChanged
     {
+        public RangeSliderViewModel()
+        {
+            LeftValue = 100;
+            RightValue = 200;
+        }
+
         private double _leftValue;
         public double LeftValue
         {

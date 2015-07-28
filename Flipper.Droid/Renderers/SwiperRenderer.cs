@@ -340,7 +340,7 @@ namespace Flipper.Droid.Renderers
             return resizedBitmap;
         }
 
-        private float _swipeStartX = 0f;
+        private float _swipeStartX = -1f;
         private float _swipeCurrectXOffset = 0f;
 
         public override bool OnTouchEvent(MotionEvent e)
@@ -348,9 +348,19 @@ namespace Flipper.Droid.Renderers
             switch(e.Action)
             {
                 case MotionEventActions.Down:
-                    _swipeStartX = e.GetX();
-                    return false;
+                    
+                    if (_swipeStartX == -1f)
+                    {
+                        _swipeStartX = e.GetX();
 
+                        var me = MotionEvent.Obtain(e);
+                        OnTouchEvent(me);
+
+                        return false; 
+                    }
+
+                    return true;
+                    
                 case MotionEventActions.Up:
                 case MotionEventActions.Cancel:
                   //  _swipeCurrectXOffset = 0f;
@@ -378,7 +388,9 @@ namespace Flipper.Droid.Renderers
                     {
                         AnimateBackToStart();
                     }
-                    
+
+                    _swipeStartX = -1f;
+
                     return true;
 
                 case MotionEventActions.Move:
