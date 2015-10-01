@@ -45,9 +45,7 @@ namespace Flipper.Sample.Views
             var r = new Random();
             for (int i = 0; i < 5; i++)
             {
-             //   var url = String.Format("http://dummyimage.com/{0}x{1}/fff?a={2}",
-             //                           r.Next(100, 1400), r.Next(100, 1000), key);
-                var url = String.Format("http://lorempixel.com/{0}/{1}/?a={2}",
+                var url = String.Format("https://ssl.webpack.de/lorempixel.com/{0}/{1}/?a={2}",
                                        r.Next(100, 1400), r.Next(100, 1000), key);
             
                 if (!items.Contains(url))

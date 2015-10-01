@@ -321,8 +321,12 @@ namespace Flipper.iOS
                     {
                         content = await client.GetByteArrayAsync(imageUrl);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        if(ex.Message.Contains("the resource could not be loaded because the app transport security policy"))
+                        {
+                            throw new Exception("You need to disable app transport security (iOS only) or fetch images from a secure source");
+                        }
                         // TODO Deside what to do with this
                         return null;
                     }
