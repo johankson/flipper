@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>Flipper.Forms</id>
-        <version>1.0.3-Pre4</version>
+        <version>1.0.3-Pre5</version>
         <title>Flipper Forms Controls</title>
         <authors>Johan Karlsson, Daniel Hindrikes</authors>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
@@ -12,6 +12,7 @@
         <summary>MIT license</summary>
         <releaseNotes>
           Checkout the github-wiki at the project URL for documentation.
+          Version 1.0.3-Pre 5 - Updated forms to 1.5.1
           Version 1.0.3-Pre 4 - Bug fix for Android SwiperView.
           Version 1.0.3-Pre 3 - Bug fix for Android SwiperView.
           Version 1.0.3-Pre 2 - SwiperView for Android is now working inside a ScrollView.
