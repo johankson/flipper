@@ -14,10 +14,10 @@ namespace Flipper.Sample.Views
         public SwiperView()
         {
             InitializeComponent();
-            BindingContext = CreateViewModel();
+            BindingContext = CreateViewModel(Navigation);
         }
 
-        private static SwiperViewModel CreateViewModel()
+        private static SwiperViewModel CreateViewModel(INavigation navigation)
         {
             var items = new ObservableCollection<string>();
 
@@ -31,7 +31,8 @@ namespace Flipper.Sample.Views
             var model = new SwiperViewModel()
             {
                 Items = items,
-                Index = 2
+                Index = 2,
+                Navigation = navigation
             };
             return model;
         }
