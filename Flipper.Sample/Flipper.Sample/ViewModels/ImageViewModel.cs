@@ -31,6 +31,13 @@ namespace Flipper.Sample.ViewModels
             }
         }
 
+        string _status;
+        public string Status
+        {
+            get { return _status; }
+            set { _status = value; NotifyPropertyChanged("Status"); }
+        }
+
         #region INotifyPropertyChanged implementation
 
         public event PropertyChangedEventHandler PropertyChanged;
