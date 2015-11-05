@@ -71,6 +71,7 @@ namespace Flipper.iOS
             _centerImageView = CreateImageView();
             _centerImageView.UserInteractionEnabled = true;
             _centerImageView.AddGestureRecognizer(new UIPanGestureRecognizer(OnPan));
+            _centerImageView.AddGestureRecognizer(new UITapGestureRecognizer(OnTapped));
 
             UpdateSizes();
 
@@ -350,6 +351,17 @@ namespace Flipper.iOS
             }
 
             return UIImage.LoadFromData(NSData.FromArray(content));
+        }
+
+        private void OnTapped(UITapGestureRecognizer recognizer)
+        {
+            if (this.Element.Tapped == null)
+                return;
+
+            if (this.Element.Tapped.CanExecute(null))
+            {
+                this.Element.Tapped.Execute(null);
+            }
         }
 
         private void OnPan(UIPanGestureRecognizer recognizer)

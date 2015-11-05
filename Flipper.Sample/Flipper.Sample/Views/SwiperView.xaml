@@ -29,7 +29,8 @@
                         SelectedIndex="{Binding Index, Mode=TwoWay}"
                         SelectedUrl="{Binding Url, Mode=TwoWay}"
                         NearEndThreshold="4"
-                        ImageLoadingText="Image is loading..." />
+                        ImageLoadingText="Image is loading..."
+                        Tapped="{Binding ImageTappedCommand}" />
       </flipper:CardContentView>
     </ContentView>
     <BoxView Color="Green" Grid.Row="2" />

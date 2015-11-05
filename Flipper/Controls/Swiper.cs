@@ -15,6 +15,10 @@ namespace Flipper.Controls
             BindableProperty.Create<Swiper, ICommand>(
             (p) => p.IsNearEnd, null);
 
+        public static readonly BindableProperty TappedProperty =
+            BindableProperty.Create<Swiper, ICommand>(
+                (p) => p.Tapped, null);
+
         public static readonly BindableProperty SelectedIndexProperty =
             BindableProperty.Create<Swiper, int>(
             (p) => p.SelectedIndex, -1);
@@ -48,6 +52,15 @@ namespace Flipper.Controls
         {
             get { return (ICommand)GetValue(IsNearEndProperty); }
             set { SetValue(IsNearEndProperty, value); }
+        }
+
+        /// <summary>
+        /// Fires when tapping the current image.
+        /// </summary>
+        public ICommand Tapped
+        {
+            get { return (ICommand)GetValue(TappedProperty); }
+            set { SetValue(TappedProperty, value); }
         }
 
         /// <summary>

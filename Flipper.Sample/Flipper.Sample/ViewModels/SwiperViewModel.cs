@@ -13,6 +13,8 @@ namespace Flipper.Sample.ViewModels
 {
     class SwiperViewModel : INotifyPropertyChanged
     {
+        public INavigation Navigation { get; set; }
+
         ObservableCollection<string> _items;
         public ObservableCollection<string> Items
         {
@@ -69,6 +71,18 @@ namespace Flipper.Sample.ViewModels
             }
         }
 
+        public ICommand ImageTappedCommand
+        {
+            get
+            {
+                return new Command(async () =>
+                {
+                    // Navigate to view which shows tapped image
+                    await Navigation.PushAsync(new ImageView(Index, Url));
+                });
+            }
+        }
+        
         public ICommand GotoRandomIndex
         {
             get
